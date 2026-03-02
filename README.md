@@ -55,16 +55,16 @@
 ## Tentative Plan
 
 ### Week-By-Week Plan
-**Week 1: Core Infrastructure & Authentication**
+#### Week 1: Core Infrastructure & Authentication
 Initializing the Next.js project with TypeScript, Tailwind CSS, and shadcn/ui will be done as well as setting up the PostgreSQL schema and connecting it via Prisma ORM. Implementing Better Auth for role-based access should also be done this week as well to ensure there is a clear distinction of the collection of pages each type of user has access to (Teacher and Student). The way we measure this week’s success will be having a working login system and basic dashboard layout.
 
-**Week 2: Course Management & File Handling**
+#### Week 2: Course Management & File Handling
 This week focuses on building some of the core functionalities for the Teacher user which is the “Course Creation” workflow. This is where Teachers can upload their text content and PDF uploads and maybe video content. Also building the Student actor’s “Course View” and enrollment logic is a goal for this week as we will be able to see noticeable change on the Student’s dashboard after Teachers make their course(s). Intuitively since we are working with getting the Teacher’s content to be uploadable, we will need to set up a cloud storage for keeping that educational material. The metric for success this week is if we can have a functioning CRUD for the courses and file persistence of the course materials.
 
-**Week 3: Advanced Features, Testing and Validation**
+#### Week 3: Advanced Features, Testing and Validation
 As we are wrapping up on the key features of this project like the content builder for quizzes and assignments as well as the assignment submission page, we’ll be working on the advanced features. This week we’ll be implementing the Postgres LISTEN/NOTIFY triggers and Server-Set Events endpoints to get live notifications working. We’ll also be working on getting a Learning Record System (LRS) setup with a third-party and learning their API to integrate with our platform and send student activity logs through. How we’ll measure success this week’s end is by seeing if we have live notifications and the external APIs working as well as all of the other functionality of our platform operating as intended.
 
-**Breakdown of Responsibilities**
+#### Breakdown of Responsibilities
 To ensure we complete this project in an optimal manner, we are dividing the tasks to match each team member’s skill sets.
 
 ### David
