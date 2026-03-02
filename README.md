@@ -26,9 +26,9 @@
     * [Anticipated Challenges](#anticipated-challenges)
     * [Early Collaboration Plan](#early-collaboration-plan)    
 * [AI Assistance Disclosure](#ai-assistance-disclosure)
-    * [Parts of the Proposal That Were Developed Without AI Assistance](#parts-developed-without-ai-assistance)
-    * [What Specific Tasks or Drafts Did AI Help With?](#specific-tasks-ai-helped-with)
-    * [One Idea Where AI input Influenced Our Proposal](#idea-where-ai-influenced-proposal)
+    * [Parts of the Proposal That Were Developed Without AI Assistance](#parts-of-the-proposal-developed-without-ai-assistance)
+    * [What Specific Tasks or Drafts Did AI Help With?](#specific-tasks-that-ai-helped-with)
+    * [One Idea Where AI input Influenced Our Proposal](#one-idea-where-ai-input-influenced-our-proposal)
 
 ## Motivation
 
@@ -118,10 +118,10 @@ Finally, many third party integrations expect long-lasting live connections betw
 ## AI Assistance Disclosure
 We found AI to be incredibly useful with helping us create parts of our proposal, especially when we had trouble finding resources online with normal google searches, the stored information from AI LLMS provided invaluable insight.
 
-### Parts of the Proposal That Were Developed Without AI Assistance
+### Parts of the Proposal Developed Without AI Assistance
 The initial project concept for the Personalized Learning Platform was developed without any AI. Along with the Motivation section, the preliminary database schema design, and the breakdown of responsibilities of our team members.
 
-### What Specific Tasks or Drafts Did AI Help With?
+### Specific Tasks That AI Helped With
 AI was used to help refine the Tentative Plan by transforming our high-level goals into a structured 3-week sprint. It also assisted in providing ideas for technical libraries and third-party APIs that we could incorporate for our advanced features implementations.
 
 ### One Idea Where AI input Influenced Our Proposal
