@@ -33,7 +33,7 @@
 ## Motivation
 
 ### Background
-The significance of high quality online learning has increased over recent years, but online learning has challenges which can limit its effectiveness compared to in person tutoring. Students may find it difficult to adapt to an online environment and communication can often be slower without direct face-to-face interactions between the student and teacher. As such, accessible educational platforms are needed for both students and educators for effective teaching and learning. 
+The significance of high quality online learning has increased over recent years, but online learning has unique challenges which can limit its effectiveness compared to in person tutoring. Students may find it difficult to adapt to an online environment and communication can often be slower without direct face-to-face interactions between the student and teacher. As such, accessible educational platforms are needed for both students and educators for effective teaching and learning. 
 
 ### Problem Statement
 The following project will develop an intuitive and efficient system that both students and teachers can use to manage their courses and any respective learning materials. Teachers will be able to track their course, create assessments, and track progress of students to check on overall class progression while students will be able to navigate courses and access resources easily, making it applicable and useful for any educational context.
@@ -76,7 +76,7 @@ The plan for this week is to build out the core functionalities for the Instruct
 This week will be mainly focused on adding remaining module types such as quizzes and assessments. Additionally, advanced features such as live notifications and third party integrations will also be developed.
 
 #### Breakdown of Responsibilities
-To ensure we complete this project in an optimal manner, we are dividing the tasks to match each team member’s skill sets.
+To ensure completion of the project in an optimal manner, the tasks will be divided to match each team member’s skill sets.
 
 ### David
 - Responsible for the PostgreSQL schema design and implementation with Prisma ORM
@@ -94,7 +94,7 @@ To ensure we complete this project in an optimal manner, we are dividing the tas
 - Handling state management for real-time updates
 - Ensuring responsive dashboard design
 
-Aside from these listed above, we all will be working on creating the back-end and front-end code for each of the key features. This includes writing API endpoints, tests, React layouts, API call functions, and making CSS design decisions.
+Aside from tasks listed above, all members will work on creating the back-end and front-end code for each of the key features. This includes writing API endpoints, tests, React layouts, API call functions, and making CSS design decisions.
 
 ## Initial Independent Reasoning
 
@@ -115,13 +115,13 @@ Likewise, caching and data fetching on the Next.js side of things is also an exp
 Finally, many third party integrations expect long-lasting live connections between the client and server. As such, these generally involve using a dedicated backend service with WebSockets to create and manage these connections. It is uncertain how this could be translated to Next.js fullstack if at all possible.
 
 ### Early Collaboration Plan
-It is expected that each team member focuses on one part of the stack. This allows for concurrent development without needing highly synchronous work sessions such as pair programming. Ideally, each team member focuses on a part of the stack that they are most familiar or most confident with. Finally, GitHub and Instant Messaging would be used for coordinating code contributions. 
+It is expected that each team member focuses on one part of the stack. This allows for concurrent development without needing highly synchronous work sessions such as pair programming. Ideally, each team member focuses on a part of the stack that they are most familiar or most confident with. GitHub and Instant Messaging would be used for coordinating code contributions and reviewing the work of other team members. 
 
 ## AI Assistance Disclosure
-We found AI to be incredibly useful with helping us create parts of our proposal, especially when we had trouble finding resources online with normal google searches, the stored information from AI LLMS provided invaluable insight.
+We found AI to be useful with helping to create parts of our proposal, especially when we had trouble finding resources online with normal Google searches as the stored information from AI LLMS provided invaluable insight.
 
 ### Parts of the Proposal Developed Without AI Assistance
-The initial project concept for the Personalized Learning Platform was developed without any AI. Along with the Motivation section, the preliminary database schema design, and the breakdown of responsibilities of our team members.
+The initial project concept for the Personalized Learning Platform was developed without any AI, along with the Motivation section, the preliminary database schema design, initial reasoning, and the breakdown of individual responsibilities.
 
 ### Specific Tasks That AI Helped With
 AI was used to help refine the Tentative Plan by transforming our high-level goals into a structured 3-week sprint. It also assisted in providing ideas for technical libraries and third-party APIs that we could incorporate for our advanced features implementations.
