@@ -1,1 +1,6 @@
 /.idea/
+/package-lock.json
+
+/generated/prisma
+/.env
+/node_modules/

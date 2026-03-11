@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+enum ModuleType {
+  LECTURE
+  ASSIGNMENT
+  QUIZ
+}
+
+enum SubmissionStatus {
+  INCOMPLETE
+  PASS
+  FAIL
+}
+
+enum CourseStatus {
+  INCOMPLETE
+  PASSED
+  DROPPED
+}
+
+model User {
+  user_id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_name       String
+  role            UserRole @default(STUDENT)
+  hashed_password String
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  comments    Comment[]    @relation("UserToComment")
+  enrollments Enrollment[]
+  managing    Managing[]
+  submissions Submission[]
+}
+
+model Course {
+  course_id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  course_name        String
+  course_description String?
+  total_enrolled     BigInt   @default(0)
+  total_completed    BigInt   @default(0)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  modules     Module[]     @relation("CourseToModule")
+  comments    Comment[]    @relation("CourseToComment")
+  enrollments Enrollment[]
+  managing    Managing[]
+}
+
+model Comment {
+  comment_id   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  comment_text String
+  course_id    String   @db.Uuid
+  author_id    String   @db.Uuid
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  course Course @relation("CourseToComment", fields: [course_id], references: [course_id])
+  author User   @relation("UserToComment", fields: [author_id], references: [user_id])
+}
+
+model Module {
+  module_id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  course_id           String     @db.Uuid
+  module_index        Int
+  module_type         ModuleType
+  module_resource_uri String
+  module_title        String
+  module_description  String
+  created_at          DateTime   @default(now())
+  updated_at          DateTime   @updatedAt
+
+  course      Course       @relation("CourseToModule", fields: [course_id], references: [course_id])
+  submissions Submission[]
+}
+
+model Managing {
+  instructor_id String @db.Uuid
+  course_id     String @db.Uuid
+
+  instructor User   @relation(fields: [instructor_id], references: [user_id])
+  course     Course @relation(fields: [course_id], references: [course_id])
+
+  @@id([instructor_id, course_id])
+}
+
+model Enrollment {
+  student_id    String       @db.Uuid
+  course_id     String       @db.Uuid
+  course_status CourseStatus
+
+  student User   @relation(fields: [student_id], references: [user_id])
+  course  Course @relation(fields: [course_id], references: [course_id])
+
+  @@id([student_id, course_id])
+}
+
+model Submission {
+  student_id        String           @db.Uuid
+  module_id         String           @db.Uuid
+  submission_status SubmissionStatus
+  submission_grade  Decimal
+
+  student User   @relation(fields: [student_id], references: [user_id])
+  module  Module @relation(fields: [module_id], references: [module_id])
+
+  @@id([student_id, module_id])
+}
