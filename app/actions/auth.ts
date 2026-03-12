@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 
-export async function handleSignUp (formData: FormData) {
+export async function signUpAction (formData: FormData) {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -35,12 +35,19 @@ export async function handleSignUp (formData: FormData) {
     }
   });
 
-  redirect("/");
+  redirect("/courses");
 }
 
 export async function signInAction (formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+
+  if (!email || email.trim() == "") {
+    return "Email is required";
+  }
+  if (!password) {
+    return "Password is required";
+  }
 
   await auth.api.signInEmail({
     body: {
@@ -49,9 +56,10 @@ export async function signInAction (formData: FormData) {
     }
   });
 
-  redirect("/");
+  redirect("/courses");
 }
 
+// TODO: Untested
 export async function signOutAction () {
   await auth.api.signOut({
     headers: await headers()

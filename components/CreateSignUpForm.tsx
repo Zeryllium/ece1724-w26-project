@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+
 import { SignUpForm } from "./SignUpForm"
-//import { authClient } from "@/lib/auth-client";
-import {handleSignUp} from "@/app/actions/auth";
+import { signUpAction } from "@/app/actions/auth";
 
 export default function CreateSignUpForm() {
 
@@ -13,7 +13,7 @@ export default function CreateSignUpForm() {
 
   const handleSubmit = async (formData: FormData) => {
     try {
-      const error = await handleSignUp(formData);
+      const error = await signUpAction(formData);
       if (error) {
         seterrorMessage(error)
       } else {
@@ -21,6 +21,7 @@ export default function CreateSignUpForm() {
       }
 
     } catch (error) {
+      // TODO: After debugging, squash this error message so the client does not see the actual server errors
       seterrorMessage(error instanceof Error ? error.message : "Could not sign up")
     }
   }

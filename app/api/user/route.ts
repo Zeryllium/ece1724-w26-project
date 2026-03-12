@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await prisma.user.findFirstOrThrow({
       where: {
-        userId: session.user.id
+        id: session.user.id
       },
       include: {
         enrollments: {
