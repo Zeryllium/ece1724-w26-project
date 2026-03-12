@@ -37,27 +37,35 @@ enum CourseStatus {
 }
 
 model User {
-  user_id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_name       String
-  role            UserRole @default(STUDENT)
-  hashed_password String
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  userId    String   @id @default(dbgenerated("pg_catalog.gen_random_uuid()")) @db.Uuid
+  role      UserRole @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   comments    Comment[]    @relation("UserToComment")
   enrollments Enrollment[]
   managing    Managing[]
   submissions Submission[]
+
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
 }
 
 model Course {
-  course_id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  course_name        String
-  course_description String?
-  total_enrolled     BigInt   @default(0)
-  total_completed    BigInt   @default(0)
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
+  courseId          String   @id @default(dbgenerated("pg_catalog.gen_random_uuid()")) @db.Uuid
+  courseName        String
+  courseDescription String?
+  totalEnrolled     BigInt   @default(0)
+  totalCompleted    BigInt   @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   modules     Module[]     @relation("CourseToModule")
   comments    Comment[]    @relation("CourseToComment")
@@ -66,61 +74,109 @@ model Course {
 }
 
 model Comment {
-  comment_id   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  comment_text String
-  course_id    String   @db.Uuid
-  author_id    String   @db.Uuid
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  commentId   String   @id @default(dbgenerated("pg_catalog.gen_random_uuid()")) @db.Uuid
+  commentText String
+  courseId    String   @db.Uuid
+  authorId    String   @db.Uuid
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  course Course @relation("CourseToComment", fields: [course_id], references: [course_id])
-  author User   @relation("UserToComment", fields: [author_id], references: [user_id])
+  course Course @relation("CourseToComment", fields: [courseId], references: [courseId])
+  author User   @relation("UserToComment", fields: [authorId], references: [userId])
 }
 
 model Module {
-  module_id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  course_id           String     @db.Uuid
-  module_index        Int
-  module_type         ModuleType
-  module_resource_uri String
-  module_title        String
-  module_description  String
-  created_at          DateTime   @default(now())
-  updated_at          DateTime   @updatedAt
+  moduleId          String     @id @default(dbgenerated("pg_catalog.gen_random_uuid()")) @db.Uuid
+  courseId          String     @db.Uuid
+  moduleIndex       Int
+  moduleType        ModuleType
+  moduleResourceUri String
+  moduleTitle       String
+  moduleDescription String
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
 
-  course      Course       @relation("CourseToModule", fields: [course_id], references: [course_id])
+  course      Course       @relation("CourseToModule", fields: [courseId], references: [courseId])
   submissions Submission[]
 }
 
 model Managing {
-  instructor_id String @db.Uuid
-  course_id     String @db.Uuid
+  instructorId String @db.Uuid
+  courseId     String @db.Uuid
 
-  instructor User   @relation(fields: [instructor_id], references: [user_id])
-  course     Course @relation(fields: [course_id], references: [course_id])
+  instructor User   @relation(fields: [instructorId], references: [userId])
+  course     Course @relation(fields: [courseId], references: [courseId])
 
-  @@id([instructor_id, course_id])
+  @@id([instructorId, courseId])
 }
 
 model Enrollment {
-  student_id    String       @db.Uuid
-  course_id     String       @db.Uuid
-  course_status CourseStatus
+  studentId    String       @db.Uuid
+  courseId     String       @db.Uuid
+  courseStatus CourseStatus
 
-  student User   @relation(fields: [student_id], references: [user_id])
-  course  Course @relation(fields: [course_id], references: [course_id])
+  student User   @relation(fields: [studentId], references: [userId])
+  course  Course @relation(fields: [courseId], references: [courseId])
 
-  @@id([student_id, course_id])
+  @@id([studentId, courseId])
 }
 
 model Submission {
-  student_id        String           @db.Uuid
-  module_id         String           @db.Uuid
-  submission_status SubmissionStatus
-  submission_grade  Decimal
+  studentId        String           @db.Uuid
+  moduleId         String           @db.Uuid
+  submissionStatus SubmissionStatus
+  submissionGrade  Decimal
 
-  student User   @relation(fields: [student_id], references: [user_id])
-  module  Module @relation(fields: [module_id], references: [module_id])
+  student User   @relation(fields: [studentId], references: [userId])
+  module  Module @relation(fields: [moduleId], references: [moduleId])
 
-  @@id([student_id, module_id])
+  @@id([studentId, moduleId])
+}
+
+model Session {
+  id        String   @id @default(dbgenerated("pg_catalog.gen_random_uuid()")) @db.Uuid
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(dbgenerated("pg_catalog.gen_random_uuid()")) @db.Uuid
+  accountId             String
+  providerId            String
+  userId                String    @db.Uuid
+  user                  User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(dbgenerated("pg_catalog.gen_random_uuid()")) @db.Uuid
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
