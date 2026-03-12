@@ -80,11 +80,11 @@ To ensure completion of the project in an optimal manner, the tasks will be divi
 
 ### David
 - Responsible for the PostgreSQL schema design and implementation with Prisma ORM
-- Creating the SSE implementation with Postgres triggers for real-time advanced feature
+- Responsible for setting up Better Auth framework implementation
 - Cloud deployment for both storing the educational content and hosting the platform
 
 ### Rohan
-- Responsible for setting up Better Auth framework implementation
+- Creating the SSE implementation with Postgres triggers for real-time advanced feature
 - Creating Learning Record System API and implementing it within the code
 - Integrating Google Calendar API
 - Handling PDF generation microservice
