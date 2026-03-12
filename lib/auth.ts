@@ -31,11 +31,11 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  advanced: {
-    database: {
-      generateId: "uuid"
-    }
-  },
+  // advanced: {
+  //   database: {
+  //     generateId: false
+  //   }
+  // },
   emailAndPassword: {
     enabled: true
   },

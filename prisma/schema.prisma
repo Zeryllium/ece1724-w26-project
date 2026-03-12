@@ -37,7 +37,7 @@ enum CourseStatus {
 }
 
 model User {
-  userId    String   @id @default(dbgenerated("pg_catalog.gen_random_uuid()")) @db.Uuid
+  id        String   @id
   role      UserRole @default(STUDENT)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -77,12 +77,12 @@ model Comment {
   commentId   String   @id @default(dbgenerated("pg_catalog.gen_random_uuid()")) @db.Uuid
   commentText String
   courseId    String   @db.Uuid
-  authorId    String   @db.Uuid
+  authorId    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   course Course @relation("CourseToComment", fields: [courseId], references: [courseId])
-  author User   @relation("UserToComment", fields: [authorId], references: [userId])
+  author User   @relation("UserToComment", fields: [authorId], references: [id])
 }
 
 model Module {
@@ -101,48 +101,48 @@ model Module {
 }
 
 model Managing {
-  instructorId String @db.Uuid
+  instructorId String
   courseId     String @db.Uuid
 
-  instructor User   @relation(fields: [instructorId], references: [userId])
+  instructor User   @relation(fields: [instructorId], references: [id])
   course     Course @relation(fields: [courseId], references: [courseId])
 
   @@id([instructorId, courseId])
 }
 
 model Enrollment {
-  studentId    String       @db.Uuid
+  studentId    String
   courseId     String       @db.Uuid
   courseStatus CourseStatus
 
-  student User   @relation(fields: [studentId], references: [userId])
+  student User   @relation(fields: [studentId], references: [id])
   course  Course @relation(fields: [courseId], references: [courseId])
 
   @@id([studentId, courseId])
 }
 
 model Submission {
-  studentId        String           @db.Uuid
+  studentId        String
   moduleId         String           @db.Uuid
   submissionStatus SubmissionStatus
   submissionGrade  Decimal
 
-  student User   @relation(fields: [studentId], references: [userId])
+  student User   @relation(fields: [studentId], references: [id])
   module  Module @relation(fields: [moduleId], references: [moduleId])
 
   @@id([studentId, moduleId])
 }
 
 model Session {
-  id        String   @id @default(dbgenerated("pg_catalog.gen_random_uuid()")) @db.Uuid
+  id        String   @id
   expiresAt DateTime
   token     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
-  userId    String   @db.Uuid
-  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@index([userId])
@@ -150,11 +150,11 @@ model Session {
 }
 
 model Account {
-  id                    String    @id @default(dbgenerated("pg_catalog.gen_random_uuid()")) @db.Uuid
+  id                    String    @id
   accountId             String
   providerId            String
-  userId                String    @db.Uuid
-  user                  User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -170,7 +170,7 @@ model Account {
 }
 
 model Verification {
-  id         String   @id @default(dbgenerated("pg_catalog.gen_random_uuid()")) @db.Uuid
+  id         String   @id
   identifier String
   value      String
   expiresAt  DateTime

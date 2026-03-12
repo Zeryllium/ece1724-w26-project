@@ -9,9 +9,12 @@ export default function CreateLoginForm() {
 
   const handleSubmit = async (formData: FormData) => {
     try {
+      const email = formData.get("email") as string
+      const password = formData.get("password") as string
+
       const { data, error } = await authClient.signIn.email({
-        email: formData.get("email") as string,
-        password: formData.get("password") as string,
+        email: email,
+        password: password,
         callbackURL: "/courses",
         rememberMe: false
       }, {
@@ -19,7 +22,7 @@ export default function CreateLoginForm() {
       })
 
       if (error) {
-        seterrorMessage(error instanceof Error ? error.message : "Invalid Credentials" )
+        seterrorMessage(error.message ? error.message : "Invalid Credentials" )
       }
 
     } catch (error) {
@@ -37,7 +40,5 @@ export default function CreateLoginForm() {
       }
     </div>
   );
-
-
 }
 
