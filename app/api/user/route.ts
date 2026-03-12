@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
   } catch {
     return NextResponse.json(
       {
-        error: "Not Found"
+        error: "User Not Found"
       },
       {
         status: 404
