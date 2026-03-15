@@ -65,58 +65,81 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
   }
 
   return (
-    <div className="container mx-auto p-8 max-w-5xl space-y-12">
-      {/* Header section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50 p-6 rounded-xl border">
-        <div>
-          <Link href="/courses" className="text-sm text-blue-600 hover:underline mb-2 inline-block">
-            &larr; Back to Dashboard
+    <div className="container mx-auto p-4 md:p-8 max-w-5xl space-y-12 pb-24">
+      {/* Header section (Hero) */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-slate-50 p-8 rounded-2xl border border-slate-100 relative overflow-hidden">
+        {/* Decorative background element */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-slate-200/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+        
+        <div className="relative z-10 w-full md:w-2/3">
+          <Link href="/courses" className="text-sm text-slate-500 hover:text-slate-800 transition font-medium mb-4 inline-flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Dashboard
           </Link>
-          <h1 className="text-3xl font-bold">{course.courseName}</h1>
-          <p className="text-gray-600 mt-2">{course.courseDescription || "No description provided."}</p>
+          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">{course.courseName}</h1>
+          <p className="text-slate-600 mt-3 text-lg leading-relaxed">{course.courseDescription || "No description provided."}</p>
         </div>
-        <div className="flex gap-2">
-           {/* Edit Course Form not explicitly built yet, just a button stub */}
+        <div className="relative z-10 shrink-0">
            <DeleteCourseButton courseId={course.courseId} courseName={course.courseName} />
         </div>
       </div>
 
       {/* Modules List */}
       <div>
-        <h2 className="text-2xl font-semibold mb-6 border-b pb-2">Course Modules</h2>
+        <div className="flex items-center justify-between mb-8 border-b pb-4">
+          <h2 className="text-2xl font-bold tracking-tight">Course Curriculum</h2>
+          <span className="bg-slate-100 text-slate-700 text-sm font-medium px-3 py-1 rounded-full">
+            {course.modules.length} {course.modules.length === 1 ? 'Module' : 'Modules'}
+          </span>
+        </div>
         
         {course.modules.length === 0 ? (
-          <p className="text-gray-500 bg-gray-50 p-4 border rounded-md">This course has no modules yet.</p>
+          <div className="flex flex-col items-center justify-center py-16 bg-slate-50 border border-dashed rounded-2xl text-center">
+            <div className="bg-white p-3 rounded-full shadow-sm mb-3">
+              <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <p className="text-muted-foreground">This course has no modules yet. Add one below.</p>
+          </div>
         ) : (
           <div className="space-y-4">
             {course.modules.map((mod) => (
-              <div key={mod.moduleId} className="border rounded-lg p-5 flex flex-col md:flex-row justify-between gap-4 bg-white shadow-sm">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="bg-blue-100 text-blue-800 text-sm font-semibold px-2.5 py-0.5 rounded">
+              <div key={mod.moduleId} className="group border border-slate-100 rounded-xl p-6 flex flex-col md:flex-row justify-between gap-6 bg-white shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300">
+                <div className="flex-1">
+                  <div className="flex flex-wrap items-center gap-3 mb-3">
+                    <span className="bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-md">
                       Module {mod.moduleIndex}
                     </span>
-                    <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-0.5 rounded uppercase tracking-wider">
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded tracking-wider uppercase ${
+                      mod.moduleType === 'LECTURE' ? 'bg-blue-100 text-blue-800' :
+                      mod.moduleType === 'QUIZ' ? 'bg-orange-100 text-orange-800' :
+                      mod.moduleType === 'ASSIGNMENT' ? 'bg-purple-100 text-purple-800' : 
+                      'bg-slate-100 text-slate-800'
+                    }`}>
                       {mod.moduleType}
                     </span>
                   </div>
-                  <h3 className="text-lg font-semibold">{mod.moduleTitle}</h3>
+                  <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{mod.moduleTitle}</h3>
                   {mod.moduleDescription && (
-                    <p className="text-gray-600 text-sm mt-1">{mod.moduleDescription}</p>
+                    <p className="text-slate-600 text-sm mt-2 leading-relaxed max-w-3xl">{mod.moduleDescription}</p>
                   )}
                   <a 
                     href={mod.moduleResourceUri} 
                     target="_blank" 
                     rel="noreferrer"
-                    className="text-blue-600 hover:underline text-sm mt-3 inline-block font-medium"
+                    className="text-blue-600 hover:text-blue-800 hover:underline text-sm mt-4 inline-flex items-center gap-1 font-semibold"
                   >
-                    View Resource &rarr;
+                    View Attached Resource
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                   </a>
                 </div>
                 
-                <div className="flex flex-row md:flex-col gap-2 items-start md:items-end justify-start">
-                  <Link href={`/courses/${course.courseId}/${mod.moduleIndex}`} className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-md text-black transition">
-                    Edit
+                <div className="flex flex-row md:flex-col gap-2 items-start md:items-end justify-start shrink-0">
+                  <Link href={`/courses/${course.courseId}/${mod.moduleIndex}`} className="text-sm font-medium bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg text-slate-700 transition inline-block text-center w-full md:w-auto">
+                    Edit Module
                   </Link>
                   <DeleteModuleButton courseId={course.courseId} moduleIndex={mod.moduleIndex} />
                 </div>
@@ -127,8 +150,14 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
       </div>
 
       {/* Add new module form */}
-      <div className="pt-8 border-t">
-        <CreateModuleForm courseId={course.courseId} />
+      <div className="pt-10">
+        <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 md:p-8">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+            <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+            Add New Module
+          </h3>
+          <CreateModuleForm courseId={course.courseId} />
+        </div>
       </div>
     </div>
   );
