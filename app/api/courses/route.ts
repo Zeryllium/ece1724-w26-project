@@ -52,7 +52,12 @@ export async function POST(request: NextRequest) {
       return course;
     });
 
-    return NextResponse.json(newCourse, { status: 201 });
+    const serializedCourse = {
+      ...newCourse,
+      totalEnrolled: Number(newCourse.totalEnrolled),
+      totalCompleted: Number(newCourse.totalCompleted),
+    };
+    return NextResponse.json(serializedCourse, { status: 201 });
   } catch (error) {
     console.error("Failed to create course:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

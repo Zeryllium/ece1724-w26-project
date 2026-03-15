@@ -41,7 +41,7 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ cours
     // Handle the incoming update payload
     const body = await request.json();
     const { courseName, courseDescription } = body;
-    
+
     // Nothing to update
     if (courseName === undefined && courseDescription === undefined) {
       return NextResponse.json({ error: "No fields provided to update" }, { status: 400 });
@@ -64,7 +64,12 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ cours
       data: parentUpdateData,
     });
 
-    return NextResponse.json(updatedCourse);
+    const serializedCourse = {
+      ...updatedCourse,
+      totalEnrolled: Number(updatedCourse.totalEnrolled),
+      totalCompleted: Number(updatedCourse.totalCompleted),
+    };
+    return NextResponse.json(serializedCourse);
 
   } catch (error) {
     console.error("Failed to update course:", error);
