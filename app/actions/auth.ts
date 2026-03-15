@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 
-export async function signUpAction (formData: FormData) {
+export async function signUpAction(formData: FormData) {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -27,18 +27,20 @@ export async function signUpAction (formData: FormData) {
     return "Passwords do not match";
   }
 
-  await auth.api.signUpEmail({
-    body: {
-      name: name,
-      email: email,
-      password: password,
-    }
-  });
-
-  redirect("/courses");
+  try {
+    await auth.api.signUpEmail({
+      body: {
+        name: name,
+        email: email,
+        password: password,
+      }
+    });
+  } catch (error) {
+    return "Failed to register";
+  }
 }
 
-export async function signInAction (formData: FormData) {
+export async function signInAction(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
@@ -49,18 +51,20 @@ export async function signInAction (formData: FormData) {
     return "Password is required";
   }
 
-  await auth.api.signInEmail({
-    body: {
-      email: email,
-      password: password,
-    }
-  });
-
-  redirect("/courses");
+  try {
+    await auth.api.signInEmail({
+      body: {
+        email: email,
+        password: password,
+      }
+    });
+  } catch (error) {
+    return "Invalid credentials";
+  }
 }
 
 // TODO: Untested
-export async function signOutAction () {
+export async function signOutAction() {
   await auth.api.signOut({
     headers: await headers()
   });

@@ -27,8 +27,7 @@ export default async function Login() {
         <section className="rounded-lg border bg-card p-6">
           <CreateLoginForm />
           <p className={"text-sm"}>
-            {/* TODO: Link colour is not working*/}
-            Don't have an account? <Link href={"/signup"} className={"accent-blue-500 font-bold"}>Register</Link> instead.
+            Don't have an account? <Link href={"/signup"} className={"accent-blue-500 font-bold"}>Register</Link>
           </p>
         </section>
       </main>
