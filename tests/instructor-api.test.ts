@@ -87,7 +87,7 @@ describe('Instructor API Endpoints', () => {
     it('POST /api/courses should create a course and managing record', async () => {
       vi.mocked(auth.api.getSession).mockResolvedValueOnce(mockInstructorSession as any);
       
-      const mockCourse = { courseId: 'course-1', courseName: 'Test Course' };
+      const mockCourse = { courseId: 'course-1', courseName: 'Test Course', totalCompleted: 0, totalEnrolled: 0 };
       vi.mocked(prisma.course.create).mockResolvedValueOnce(mockCourse as any);
       vi.mocked(prisma.managing.create).mockResolvedValueOnce({} as any);
 
@@ -121,7 +121,7 @@ describe('Instructor API Endpoints', () => {
       vi.mocked(prisma.course.findUnique).mockResolvedValueOnce({ courseId: 'course-1' } as any);
       vi.mocked(prisma.managing.findUnique).mockResolvedValueOnce({ instructorId: 'instructor-123' } as any);
       
-      const mockUpdated = { courseId: 'course-1', courseName: 'New Name' };
+      const mockUpdated = { courseId: 'course-1', courseName: 'New Name', totalCompleted: 0, totalEnrolled: 0 };
       vi.mocked(prisma.course.update).mockResolvedValueOnce(mockUpdated as any);
 
       const req = createMockRequest({ courseName: 'New Name' });

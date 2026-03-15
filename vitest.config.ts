@@ -7,5 +7,6 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, './'),
     },
+    exclude: ['**/node_modules/**', '**/dist/**', '**/tests/*.spec.ts'],
   },
 });
