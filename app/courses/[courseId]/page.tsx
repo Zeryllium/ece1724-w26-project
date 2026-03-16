@@ -23,16 +23,22 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
   const _isManaging = await isManaging(session.user.id, courseId);
   const _isEnrolled = await isEnrolled(session.user.id, courseId);
 
-  const course = await prisma.course.findUnique({
-    where: { courseId },
-    include: {
-      modules: {
-        orderBy: { moduleIndex: 'asc' }
+  let course = null
+  try {
+    course = await prisma.course.findUniqueOrThrow({
+      where: {courseId},
+      include: {
+        modules: {
+          orderBy: {moduleIndex: 'asc'}
+        }
       }
-    }
-  });
+    });
+  } catch {
+    // Invalid uuid or course not found
 
-  if (!course) {
+    // Note: Code Analysis may indicate that course is possibly null. However,
+    // findUniqueOrThrow will never return a null object. A database miss would
+    // always throw an Exception instead.
     notFound();
   }
 
