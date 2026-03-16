@@ -1,13 +1,13 @@
 import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
-import {auth, isEnrolled, isManaging} from "@/lib/auth";
+import {auth, isEnrolled, isManaging, ROLES} from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import CreateModuleForm from "@/components/CreateModuleForm";
 import DeleteCourseButton from "@/components/DeleteCourseButton";
 import DeleteModuleButton from "@/components/DeleteModuleButton";
-import Navbar from "@/components/Navbar";
 import EnrollButton from "@/components/EnrollButton";
+import RoleSetter from "@/components/RoleSetter";
 
 export default async function CourseDetailPage(props: { params: Promise<{ courseId: string }> }) {
   const { courseId } = await props.params;
@@ -38,17 +38,12 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
 
   // Determine contextual role for Navbar
   let roleLabel: string | null = null;
-  if (_isManaging) roleLabel = "INSTRUCTOR";
-  else if (_isEnrolled) roleLabel = "STUDENT";
+  if (_isManaging) roleLabel = ROLES.INSTRUCTOR;
+  else if (_isEnrolled) roleLabel = ROLES.STUDENT;
 
   return (
     <>
-      <Navbar 
-        name={session.user.name} 
-        email={session.user.email} 
-        role={roleLabel} 
-        image={session.user.image} 
-      />
+      <RoleSetter role={roleLabel}/>
       
       <div className="container mx-auto p-4 md:p-8 max-w-5xl space-y-12 pb-24">
         {/* Header section (Hero) */}

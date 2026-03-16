@@ -1,10 +1,8 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { auth, ROLES } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import CreateCourseForm from "@/components/CreateCourseForm";
-
-import Navbar from "@/components/Navbar";
 
 export default async function NewCoursePage() {
   const session = await auth.api.getSession({
@@ -19,12 +17,6 @@ export default async function NewCoursePage() {
 
   return (
     <>
-      <Navbar 
-        name={session.user.name} 
-        email={session.user.email} 
-        role={null} 
-        image={session.user.image} 
-      />
       <div className="container mx-auto p-4 md:p-8 max-w-2xl py-12">
       <Link href="/courses" className="text-sm text-blue-600 hover:text-blue-800 transition font-medium mb-6 inline-flex items-center gap-2">
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

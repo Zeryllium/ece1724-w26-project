@@ -48,14 +48,14 @@ export const auth = betterAuth({
  * @param courseId
  */
 export async function isManaging(userId:string, courseId:string) {
-  return prisma.managing.findUnique({
+  return await prisma.managing.findUnique({
     where: {
       instructorId_courseId: {
         instructorId: userId,
         courseId: courseId
       }
     }
-  });
+  }) !== null;
 }
 
 /**
@@ -64,12 +64,12 @@ export async function isManaging(userId:string, courseId:string) {
  * @param courseId
  */
 export async function isEnrolled(userId:string, courseId:string) {
-  return prisma.enrollment.findUnique({
+  return await prisma.enrollment.findUnique({
     where: {
       studentId_courseId: {
         studentId: userId,
         courseId: courseId
       }
     }
-  });
+  }) !== null;
 }

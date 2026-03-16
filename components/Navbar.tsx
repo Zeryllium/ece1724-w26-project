@@ -1,14 +1,13 @@
+"use client";
+
 import { signOutAction } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/context/UserContext";
 
-type NavbarProps = {
-  name: string;
-  email: string;
-  role?: string | null;
-  image?: string | null;
-};
+export default function Navbar() {
+  const {user, currentRole} = useUser();
+  const {name, email, image} = user
 
-export default function Navbar({ name, email, role, image }: NavbarProps) {
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md shadow-sm">
       <div className="container mx-auto flex h-16 items-center flex-row justify-between px-6">
@@ -20,9 +19,9 @@ export default function Navbar({ name, email, role, image }: NavbarProps) {
         {/* User Profile & Actions */}
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-3">
-             {role && (
+             {currentRole && (
                <span className="uppercase bg-secondary px-2 py-1.5 rounded-md text-[10px] font-bold tracking-wider text-secondary-foreground">
-                 {role}
+                 {currentRole}
                </span>
              )}
              <div className="flex flex-col items-end">

@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import Navbar from "@/components/Navbar";
 
 export default async function CoursesPage() {
   const session = await auth.api.getSession({
@@ -27,7 +26,7 @@ export default async function CoursesPage() {
         }
       },
     }),
-    
+
     // 2. Enrolled Courses
     prisma.enrollment.findMany({
       where: { studentId: userId },
@@ -70,13 +69,6 @@ export default async function CoursesPage() {
 
   return (
     <>
-      <Navbar 
-        name={session.user.name} 
-        email={session.user.email} 
-        role={null} 
-        image={session.user.image} 
-      />
-      
       <div className="container mx-auto p-8 max-w-6xl space-y-16 pb-24">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
@@ -92,7 +84,7 @@ export default async function CoursesPage() {
             + Create New Course
           </Link>
         </div>
-        
+
         {/* Enrolled Courses Section */}
         <section>
           <h2 className="text-2xl font-bold border-b pb-3 mb-6">Enrolled Courses</h2>
@@ -103,7 +95,7 @@ export default async function CoursesPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {enrolledRecords.map(({ course, courseStatus }) => renderCourseCard(
-                course, 
+                course,
                 `/courses/${course.courseId}`,
                 <>
                   <div className="flex items-center gap-1.5 text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">
@@ -129,7 +121,7 @@ export default async function CoursesPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {managingRecords.map(({ course }) => renderCourseCard(
-                course, 
+                course,
                 `/courses/${course.courseId}`,
                 <>
                   <div className="flex items-center gap-1.5 text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">
@@ -156,7 +148,7 @@ export default async function CoursesPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {marketplaceCourses.map((course) => renderCourseCard(
-                course, 
+                course,
                 `/courses/${course.courseId}`,
                 <>
                   <div className="flex items-center gap-1.5 text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">

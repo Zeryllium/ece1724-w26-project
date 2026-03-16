@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { auth, ROLES } from "@/lib/auth";
+import {auth, isManaging, ROLES} from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function PUT(request: NextRequest, props: { params: Promise<{ courseId: string, moduleIndex: string }> }) {
@@ -22,16 +22,9 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ cours
   try {
     // Verify the user has permission to modify this module
     const role = (session.user as any).role;
-    const isManaging = await prisma.managing.findUnique({
-      where: {
-        instructorId_courseId: {
-          instructorId: session.user.id,
-          courseId: courseId,
-        },
-      },
-    });
+    const _isManaging = await isManaging(session.user.id, courseId);
 
-    if (!isManaging && role !== ROLES.ADMIN) {
+    if (!_isManaging && role !== ROLES.ADMIN) {
       return NextResponse.json({ error: "Forbidden: You do not manage this course" }, { status: 403 });
     }
 
@@ -107,16 +100,9 @@ export async function DELETE(request: NextRequest, props: { params: Promise<{ co
   try {
     // Verify the user has permission to delete this module
     const role = (session.user as any).role;
-    const isManaging = await prisma.managing.findUnique({
-      where: {
-        instructorId_courseId: {
-          instructorId: session.user.id,
-          courseId: courseId,
-        },
-      },
-    });
+    const _isManaging = await isManaging(session.user.id, courseId);
 
-    if (!isManaging && role !== ROLES.ADMIN) {
+    if (!_isManaging && role !== ROLES.ADMIN) {
       return NextResponse.json({ error: "Forbidden: You do not manage this course" }, { status: 403 });
     }
 

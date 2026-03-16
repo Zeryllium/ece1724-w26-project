@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
-import { auth, ROLES } from "@/lib/auth";
+import {auth, isManaging, ROLES} from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import ModuleEditorWrapper from "@/components/ModuleEditorWrapper";
 
@@ -26,17 +26,10 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
   if (!moduleData) notFound();
 
   // Check if they are managing to enable editing UI
-  const isManaging = await prisma.managing.findUnique({
-    where: {
-      instructorId_courseId: {
-        instructorId: session.user.id,
-        courseId,
-      }
-    }
-  });
+  const _isManaging = await isManaging(session.user.id, courseId);
 
   const role = (session.user as any).role || ROLES.STUDENT;
-  const canEdit = isManaging || role === ROLES.ADMIN;
+  const canEdit = _isManaging || role === ROLES.ADMIN;
 
   return (
     <div className="container mx-auto p-8 max-w-4xl space-y-8">
