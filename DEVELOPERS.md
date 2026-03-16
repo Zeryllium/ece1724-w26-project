@@ -29,30 +29,30 @@ npx prisma generate
 npx prisma db push
 ```
 
-## 3. Instructor Test Account Provisioning
+## 3. Running the API Unit Tests (Vitest)
 
-We've provided a seeding script to quickly create a test Instructor account (`demo_instructor@test.com` with password `password123`). This account is required for automated browser tests and is useful for manual UI testing or live demoing.
-
-```bash
-# Run the test seed script
-npx tsx test-seed.ts
-```
-
-## 4. Running the API Unit Tests (Vitest)
-
-We use Vitest to mock HTTP requests and test the specific isolated logic of the API endpoints directly (`/api/courses`).
+We use Vitest to mock HTTP requests and test the specific isolated logic of the API endpoints directly (`/api/courses`, etc.). The test suites are now modularized into:
+- `tests/general.api.test.ts`
+- `tests/instructor.api.test.ts`
+- `tests/student.api.test.ts`
 
 ```bash
-# Run the Vitest test suite once
+# Run the entire Vitest test suite once
 npx vitest run
+
+# Run a specific Vitest suite
+npx vitest run tests/student.api.test.ts
 
 # Run Vitest in watch mode (updates automatically as you write code)
 npx vitest
 ```
 
-## 5. Running the Browser UI Tests (Playwright)
+## 4. Running the Browser UI Tests (Playwright)
 
-We use Playwright to simulate a real user opening a Chromium browser, logging in as an instructor, and interacting with the UI.
+We use Playwright to simulate a real user opening a Chromium browser, interacting with the Unified Dashboard, and creating or enrolling in courses. The test suites are divided into:
+- `tests/general.spec.ts`
+- `tests/instructor.spec.ts`
+- `tests/student.spec.ts`
 
 Note: Playwright requires the Next.js development server to be actively running in the background because it hits `http://localhost:3000`.
 
@@ -60,12 +60,15 @@ Note: Playwright requires the Next.js development server to be actively running 
 # In Terminal 1: Start the Next.js app
 npm run dev
 
-# In Terminal 2: Run the Playwright test suite
-npx playwright test tests/instructor-dashboard.spec.ts
+# In Terminal 2: Run the entire Playwright test suite
+npx playwright test
+
+# Or run a specific Playwright test file
+npx playwright test tests/instructor.spec.ts
 
 # View the visual HTML report of the test results
 npx playwright show-report
 ```
 
 ## Troubleshooting
-If Playwright is failing due to timeout issues, ensure your development server is completely loaded, and you have run `test-seed.ts` first.
+If Playwright is failing due to timeout issues, ensure your development server is completely loaded.

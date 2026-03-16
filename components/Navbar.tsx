@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 type NavbarProps = {
   name: string;
   email: string;
-  role: string;
+  role?: string | null;
   image?: string | null;
 };
 
@@ -20,9 +20,11 @@ export default function Navbar({ name, email, role, image }: NavbarProps) {
         {/* User Profile & Actions */}
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-3">
-             <span className="uppercase bg-secondary px-2 py-1.5 rounded-md text-[10px] font-bold tracking-wider text-secondary-foreground">
-               {role}
-             </span>
+             {role && (
+               <span className="uppercase bg-secondary px-2 py-1.5 rounded-md text-[10px] font-bold tracking-wider text-secondary-foreground">
+                 {role}
+               </span>
+             )}
              <div className="flex flex-col items-end">
                 <span className="text-sm font-bold text-foreground">{name}</span>
                 <span className="text-xs text-muted-foreground">{email}</span>

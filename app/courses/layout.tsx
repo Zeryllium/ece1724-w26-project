@@ -2,7 +2,6 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
-import Navbar from "@/components/Navbar";
 
 export default async function CoursesLayout({
   children,
@@ -19,12 +18,6 @@ export default async function CoursesLayout({
 
   return (
     <div>
-      <Navbar
-        name={session.user.name}
-        email={session.user.email}
-        role={session.user.role as string ?? "STUDENT"}
-        image={session.user.image}
-      />
       <main>{children}</main>
     </div>
   );

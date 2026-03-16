@@ -15,12 +15,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Ensure user is an instructor (or admin)
-  const role = (session.user as any).role;
-  if (role !== ROLES.INSTRUCTOR && role !== ROLES.ADMIN) {
-    return NextResponse.json({ error: "Forbidden: Instructors only" }, { status: 403 });
-  }
-
   try {
     const body = await request.json();
     const { courseName, courseDescription } = body;
