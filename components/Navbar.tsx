@@ -18,12 +18,15 @@ export default function Navbar({ name, email, role, image }: NavbarProps) {
         </div>
 
         {/* User Profile & Actions */}
-        <div className="flex items-center gap-6">
-          <div className="hidden md:flex flex-col items-end">
-             <span className="text-sm font-semibold">{name}</span>
-             <span className="text-xs text-muted-foreground flex gap-1 items-center">
-                {email} <span className="uppercase bg-secondary px-1.5 py-0.5 rounded text-[10px] tracking-wider text-secondary-foreground">{role}</span>
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
+             <span className="uppercase bg-secondary px-2 py-1.5 rounded-md text-[10px] font-bold tracking-wider text-secondary-foreground">
+               {role}
              </span>
+             <div className="flex flex-col items-end">
+                <span className="text-sm font-bold text-foreground">{name}</span>
+                <span className="text-xs text-muted-foreground">{email}</span>
+             </div>
           </div>
           
           {image && (
@@ -36,7 +39,7 @@ export default function Navbar({ name, email, role, image }: NavbarProps) {
             />
           )}
 
-          <div className="h-6 w-px bg-border mx-1"></div>
+          <div className="h-6 w-px bg-border mx-1 md:mx-2"></div>
 
           <form action={signOutAction}>
             <Button type="submit" variant="ghost" size="sm" className="font-medium hover:bg-destructive/10 hover:text-destructive">
