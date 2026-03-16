@@ -41,3 +41,35 @@ export const auth = betterAuth({
   },
   plugins: [nextCookies()]
 });
+
+/**
+ * Check if a userId, courseId pair is in the Managing table
+ * @param userId
+ * @param courseId
+ */
+export async function isManaging(userId:string, courseId:string) {
+  return prisma.managing.findUnique({
+    where: {
+      instructorId_courseId: {
+        instructorId: userId,
+        courseId: courseId
+      }
+    }
+  });
+}
+
+/**
+ * Check if a userId, courseId pair is in the Enrollment table
+ * @param userId
+ * @param courseId
+ */
+export async function isEnrolled(userId:string, courseId:string) {
+  return prisma.enrollment.findUnique({
+    where: {
+      studentId_courseId: {
+        studentId: userId,
+        courseId: courseId
+      }
+    }
+  });
+}

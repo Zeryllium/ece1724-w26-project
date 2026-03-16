@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { auth, ROLES } from "@/lib/auth";
+import {auth, isManaging, ROLES} from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: NextRequest, props: { params: Promise<{ courseId: string }> }) {
@@ -16,16 +16,8 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
   try {
     // Check if the user is authorized to add modules (needs to be an instructor or admin)
     const role = (session.user as any).role;
-    const isManaging = await prisma.managing.findUnique({
-      where: {
-        instructorId_courseId: {
-          instructorId: session.user.id,
-          courseId: courseId,
-        },
-      },
-    });
 
-    if (!isManaging && role !== ROLES.ADMIN) {
+    if (!await isManaging(session.user.id, courseId) && role !== ROLES.ADMIN) {
       return NextResponse.json({ error: "Forbidden: You do not manage this course" }, { status: 403 });
     }
 

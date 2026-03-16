@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
-import { auth } from "@/lib/auth";
+import {auth, isEnrolled, isManaging} from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import CreateModuleForm from "@/components/CreateModuleForm";
 import DeleteCourseButton from "@/components/DeleteCourseButton";
@@ -20,25 +20,8 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
     redirect("/login");
   }
 
-  // Check if they manage this course
-  const isManaging = await prisma.managing.findUnique({
-    where: {
-      instructorId_courseId: {
-        instructorId: session.user.id,
-        courseId,
-      }
-    }
-  });
-
-  // Check if they are enrolled
-  const isEnrolled = await prisma.enrollment.findUnique({
-    where: {
-      studentId_courseId: {
-        studentId: session.user.id,
-        courseId,
-      }
-    }
-  });
+  const _isManaging = await isManaging(session.user.id, courseId);
+  const _isEnrolled = await isEnrolled(session.user.id, courseId);
 
   const course = await prisma.course.findUnique({
     where: { courseId },
@@ -55,8 +38,8 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
 
   // Determine contextual role for Navbar
   let roleLabel: string | null = null;
-  if (isManaging) roleLabel = "INSTRUCTOR";
-  else if (isEnrolled) roleLabel = "STUDENT";
+  if (_isManaging) roleLabel = "INSTRUCTOR";
+  else if (_isEnrolled) roleLabel = "STUDENT";
 
   return (
     <>
@@ -85,9 +68,9 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
           </div>
           
           <div className="relative z-10 shrink-0">
-             {isManaging ? (
+             {_isManaging ? (
                <DeleteCourseButton courseId={course.courseId} courseName={course.courseName} />
-             ) : !isEnrolled ? (
+             ) : !_isEnrolled ? (
                <EnrollButton courseId={course.courseId} />
              ) : (
                <div className="bg-green-100 text-green-800 px-5 py-2.5 rounded-xl font-bold border border-green-200 shadow-sm flex items-center gap-2">
@@ -114,7 +97,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
               </div>
-              <p className="text-muted-foreground">{isManaging ? "This course has no modules yet. Add one below." : "This course has no modules yet."}</p>
+              <p className="text-muted-foreground">{_isManaging ? "This course has no modules yet. Add one below." : "This course has no modules yet."}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -138,7 +121,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
                     {mod.moduleDescription && (
                       <p className="text-slate-600 text-sm mt-2 leading-relaxed max-w-3xl">{mod.moduleDescription}</p>
                     )}
-                    {isManaging || isEnrolled ? (
+                    {_isManaging || _isEnrolled ? (
                       <a 
                         href={mod.moduleResourceUri} 
                         target="_blank" 
@@ -156,7 +139,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
                     )}
                   </div>
                   
-                  {isManaging && (
+                  {_isManaging && (
                     <div className="flex flex-row md:flex-col gap-2 items-start md:items-end justify-start shrink-0">
                       <Link href={`/courses/${course.courseId}/${mod.moduleIndex}`} className="text-sm font-medium bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg text-slate-700 transition inline-block text-center w-full md:w-auto">
                         Edit Module
@@ -171,7 +154,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
         </div>
 
         {/* Add new module form */}
-        {isManaging && (
+        {_isManaging && (
           <div className="pt-10">
             <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 md:p-8">
               <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
