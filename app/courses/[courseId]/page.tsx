@@ -4,7 +4,6 @@ import Link from "next/link";
 import {auth, isEnrolled, isManaging, ROLES} from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import CreateModuleForm from "@/components/CreateModuleForm";
-import DeleteCourseButton from "@/components/DeleteCourseButton";
 import DeleteModuleButton from "@/components/DeleteModuleButton";
 import EnrollButton from "@/components/EnrollButton";
 import RoleSetter from "@/components/RoleSetter";
@@ -18,6 +17,7 @@ import {
   textH2Style, cardSectionFlex, cardClass
 } from "@/lib/ui";
 import {RxCardStack, RxCheck, RxChevronLeft} from "react-icons/rx";
+import CourseEditorWrapper from "@/components/CourseEditorWrapper";
 
 export default async function CourseDetailPage(props: { params: Promise<{ courseId: string }> }) {
   const { courseId } = await props.params;
@@ -78,7 +78,13 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
           
           <div className="relative z-10 shrink-0">
              {_isManaging ? (
-               <DeleteCourseButton courseId={course.courseId} courseName={course.courseName} />
+               <CourseEditorWrapper
+                 isManaging={_isManaging}
+                 courseId={course.courseId}
+                 courseName={course.courseName}
+                 initialName={course.courseName}
+                 initialDescription={course.courseDescription || ""}
+               />
              ) : !_isEnrolled ? (
                <EnrollButton courseId={course.courseId} />
              ) : (
