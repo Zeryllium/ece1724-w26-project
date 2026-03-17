@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import DeleteCourseButton from "./DeleteCourseButton";
 import EditCourseForm from "./EditCourseForm";
+import {buttonBaseStyling, buttonGrey} from "@/lib/ui";
 
 interface CourseActionsProps {
   isManaging: boolean;
@@ -43,7 +43,7 @@ export default function CourseEditorWrapper({
     <div className="flex flex-col gap-2">
       <button
         onClick={() => setIsEditing(true)}
-        className="text-sm font-medium bg-white hover:bg-slate-200 px-4 py-2 rounded-lg text-slate-700 border border-slate-300 transition inline-block text-center"
+        className={`${buttonBaseStyling} ${buttonGrey}`}
       >
         Edit Course
       </button>
