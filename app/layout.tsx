@@ -8,7 +8,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MyLearn Platform",
+  title: "Demokrit.os Platform",
   description: "Modern E-learning platform for Instructors and Students",
 };
 

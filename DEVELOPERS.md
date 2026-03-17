@@ -1,6 +1,6 @@
 # Developer Guide: Instructor Subsystem
 
-Welcome to the MyLearn project! This guide will help you set up the environment from scratch, provision the database, and run all our automated tests for the Instructor subsystem.
+Welcome to the Demokritos project! This guide will help you set up the environment from scratch, provision the database, and run all our automated tests for the Instructor subsystem.
 
 ## 1. Initial Setup
 

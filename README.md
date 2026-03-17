@@ -1,4 +1,4 @@
-# ECE1724 Project: MyLearn
+# ECE1724 Project: Demokritos
 
 A full-stack personalized learning platform.
 
