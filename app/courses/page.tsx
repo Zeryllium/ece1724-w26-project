@@ -7,6 +7,7 @@ import CoursesSection from "@/components/CoursesSection";
 import {mainContainerClass} from "@/lib/ui";
 import { Button } from "@/components/ui/button";
 import { RxChevronDown, RxPlus } from "react-icons/rx";
+import {ButtonGroup} from "@/components/ui/button-group";
 
 export default async function CoursesPage() {
   const session = await auth.api.getSession({
@@ -81,12 +82,18 @@ export default async function CoursesPage() {
           sectionNoneFoundExplanation={"You are not enrolled in any courses yet."}
           displayCompletionStatus={true}
           button={
-            <Button variant={"outline"} asChild className={"py-5 w-48 text-sm"}>
-              <a href={"#marketplace"}>
-                <RxChevronDown/>
-                Enroll in a Course
-              </a>
-            </Button>
+            <ButtonGroup>
+              <Button variant={"outline"} asChild className={"py-6 w-10 text-lg"}>
+                <a href={"#marketplace"}>
+                  <RxChevronDown/>
+                </a>
+              </Button>
+              <Button variant={"outline"} asChild className={"py-6 w-40 text-lg"} >
+                <a href={"#marketplace"}>
+                  Add Course
+                </a>
+              </Button>
+            </ButtonGroup>
           }
         />
 
@@ -97,12 +104,18 @@ export default async function CoursesPage() {
           sectionTitle={"Courses You Teach"}
           sectionNoneFoundExplanation={"You have not created any courses yet."}
           button={
-            <Button asChild className={"py-5 w-48 text-sm"}>
-              <Link href={"/courses/new"}>
-                <RxPlus/>
-                Create New Course
-              </Link>
-            </Button>
+            <ButtonGroup>
+              <Button asChild className={"py-6 w-10 text-lg"}>
+                <Link href={"/courses/new"}>
+                  <RxPlus/>
+                </Link>
+              </Button>
+              <Button asChild className={"py-6 w-40 text-lg"}>
+                <Link href={"/courses/new"}>
+                  Create Course
+                </Link>
+              </Button>
+            </ButtonGroup>
           }
         />
 
