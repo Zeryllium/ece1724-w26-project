@@ -1,8 +1,7 @@
 import Link from "next/link";
-import moduleIcon from "@/components/icons/module";
-import peopleIcon from "@/components/icons/people";
 import {ReactNode} from "react";
-import {textH2Style} from "@/lib/ui";
+import {lineBreak, textH2Style} from "@/lib/ui";
+import {RxCardStack, RxPeople} from "react-icons/rx";
 
 interface CourseInterface {
   _count: {
@@ -49,7 +48,7 @@ export default function CoursesSection({sectionId, courseRecords, sectionTitle, 
         <h2 className={textH2Style}>{sectionTitle}</h2>
         {button ? button : <></>}
       </div>
-      <hr className={"my-2 border-b"} />
+      <hr className={lineBreak} />
       {courseRecords.length === 0 ? (
         <div className="bg-slate-50 border border-dashed rounded-xl p-8 text-center">
           <p className="text-slate-500">{sectionNoneFoundExplanation}</p>
@@ -61,7 +60,7 @@ export default function CoursesSection({sectionId, courseRecords, sectionTitle, 
             `/courses/${course.courseId}`,
             <>
               <div className="flex items-center gap-1.5 text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">
-                {moduleIcon()}
+                <RxCardStack />
                 <span>{course._count.modules} Module{course._count.modules !== 1 ? "s" : ""}</span>
               </div>
               {
@@ -71,7 +70,7 @@ export default function CoursesSection({sectionId, courseRecords, sectionTitle, 
                   </div>
                 ) : (
                   <div className="flex items-center gap-1.5 text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md">
-                    {peopleIcon()}
+                    <RxPeople />
                     <span>{course._count.enrollments} Enrolled</span>
                   </div>
                 )

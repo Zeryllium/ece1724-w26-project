@@ -10,7 +10,7 @@ export const mainContainer =
   "container mx-auto p-8 max-w-6xl space-y-16"
 
 export const sectionFlex =
-  "flex items-center justify-between "
+  "flex items-center justify-between"
 
 export const gradientTheme =
   "bg-linear-to-r from-blue-400 to-indigo-600"
@@ -30,6 +30,8 @@ export const textDescription =
 export const textLinkBack =
   "transition duration-250 ease-in-out text-slate-500 hover:text-slate-800"
 
+export const lineBreak =
+  "my-2 border-b"
 
 /*
   Card Themes

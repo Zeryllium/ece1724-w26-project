@@ -10,6 +10,7 @@ import RoleSetter from "@/components/RoleSetter";
 import * as UI from "@/lib/ui";
 import {RxCardStack, RxCheck, RxChevronLeft, RxLink1, RxLockClosed} from "react-icons/rx";
 import CourseEditorWrapper from "@/components/CourseEditorWrapper";
+import {lineBreak, sectionFlex} from "@/lib/ui";
 
 export default async function CourseDetailPage(props: { params: Promise<{ courseId: string }> }) {
   const { courseId } = await props.params;
@@ -90,12 +91,13 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
 
         {/* Modules List */}
         <div>
-          <div className="flex items-center justify-between mb-8 border-b pb-4">
+          <div className={sectionFlex}>
             <h2 className={UI.textH2Style}>Course Curriculum</h2>
             <span className="bg-slate-100 text-slate-700 text-sm font-medium px-3 py-1 rounded-full">
               {course.modules.length} {course.modules.length === 1 ? 'Module' : 'Modules'}
             </span>
           </div>
+          <hr className={lineBreak} />
 
           <div className={`${UI.cardSectionFlex} flex-col min-h-48`}>
             {course.modules.length === 0 ? (
