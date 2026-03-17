@@ -4,7 +4,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import CoursesSection from "@/components/CoursesSection";
-import {mainContainerClass} from "@/lib/ui";
+import {mainContainer, textDescription, textGradientTheme, textH1Style} from "@/lib/ui";
 import { Button } from "@/components/ui/button";
 import { RxChevronDown, RxPlus } from "react-icons/rx";
 import {ButtonGroup} from "@/components/ui/button-group";
@@ -64,13 +64,13 @@ export default async function CoursesPage() {
 
   return (
     <>
-      <div className={mainContainerClass}>
+      <div className={mainContainer}>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">
-              Welcome, <span className="bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{session.user.name || "User"}</span>!
+            <h1 className={textH1Style}>
+              Welcome, <span className={textGradientTheme}>{session.user.name || "User"}</span>!
             </h1>
-            <p className="text-muted-foreground mt-2">Explore the marketplace, learn new skills, or teach your own courses.</p>
+            <p className={`mt-2 ${textDescription}`}>Explore the marketplace, learn new skills, or teach your own courses.</p>
           </div>
         </div>
 

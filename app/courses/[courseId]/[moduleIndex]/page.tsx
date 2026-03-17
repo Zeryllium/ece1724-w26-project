@@ -4,6 +4,7 @@ import Link from "next/link";
 import {auth, isManaging, ROLES} from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import ModuleEditorWrapper from "@/components/ModuleEditorWrapper";
+import {mainContainer} from "@/lib/ui";
 
 export default async function ModulePage(props: { params: Promise<{ courseId: string; moduleIndex: string }> }) {
   const { courseId, moduleIndex } = await props.params;
@@ -32,7 +33,7 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
   const canEdit = _isManaging || role === ROLES.ADMIN;
 
   return (
-    <div className="container mx-auto p-8 max-w-4xl space-y-8">
+    <div className={mainContainer}>
       <div>
         <Link href={`/courses/${courseId}`} className="text-sm text-blue-600 hover:underline mb-4 inline-block">
           &larr; Back to {moduleData.course.courseName}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import moduleIcon from "@/components/icons/module";
 import peopleIcon from "@/components/icons/people";
 import {ReactNode} from "react";
+import {textH2Style} from "@/lib/ui";
 
 interface CourseInterface {
   _count: {
@@ -45,7 +46,7 @@ export default function CoursesSection({sectionId, courseRecords, sectionTitle, 
   return (
     <section id={sectionId}>
       <div className={"flex justify-between place-items-center"}>
-        <h2 className="text-2xl font-bold">{sectionTitle}</h2>
+        <h2 className={textH2Style}>{sectionTitle}</h2>
         {button ? button : <></>}
       </div>
       <hr className={"my-2 border-b"} />

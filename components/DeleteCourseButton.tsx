@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import {buttonBaseStyling, buttonRed} from "@/lib/ui";
 
 export default function DeleteCourseButton({ courseId, courseName }: { courseId: string, courseName: string }) {
   const [loading, setLoading] = useState(false);
@@ -34,8 +34,12 @@ export default function DeleteCourseButton({ courseId, courseName }: { courseId:
   }
 
   return (
-    <Button variant="destructive" onClick={handleDelete} disabled={loading}>
+    <button
+      onClick={handleDelete}
+      disabled={loading}
+      className={`${buttonBaseStyling} ${buttonRed}`}
+    >
       {loading ? "Deleting..." : "Delete Course"}
-    </Button>
+    </button>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { enrollInCourse } from "@/app/actions/enroll";
+import {buttonBaseStyling, buttonBlueIndigo} from "@/lib/ui";
 
 export default function EnrollButton({ courseId }: { courseId: string }) {
   const [isPending, startTransition] = useTransition();
@@ -20,7 +21,7 @@ export default function EnrollButton({ courseId }: { courseId: string }) {
     <button
       onClick={handleEnroll}
       disabled={isPending}
-      className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all w-full md:w-auto"
+      className={`${buttonBaseStyling} ${buttonBlueIndigo}`}
     >
       {isPending ? "Enrolling..." : "Enroll Now"}
     </button>
