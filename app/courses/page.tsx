@@ -4,6 +4,9 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import CoursesSection from "@/components/CoursesSection";
+import {mainContainerClass} from "@/lib/ui";
+import { Button } from "@/components/ui/button";
+import { RxChevronDown, RxPlus } from "react-icons/rx";
 
 export default async function CoursesPage() {
   const session = await auth.api.getSession({
@@ -60,30 +63,56 @@ export default async function CoursesPage() {
 
   return (
     <>
-      <div className="container mx-auto p-8 max-w-6xl space-y-16 pb-24">
+      <div className={mainContainerClass}>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight">
-              Welcome, <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{session.user.name || "User"}</span>!
+              Welcome, <span className="bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{session.user.name || "User"}</span>!
             </h1>
             <p className="text-muted-foreground mt-2">Explore the marketplace, learn new skills, or teach your own courses.</p>
           </div>
-          <Link 
-            href="/courses/new" 
-            className="shrink-0 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg shadow-sm hover:shadow-md hover:bg-primary/90 transition-all font-semibold"
-          >
-            + Create New Course
-          </Link>
         </div>
 
         {/* Enrolled Courses Section */}
-        <CoursesSection courseRecords={enrolledRecords} sectionTitle={"Enrolled Courses"} sectionNoneFoundExplanation={"You are not enrolled in any courses yet."} displayCompletionStatus={true} />
+        <CoursesSection
+          sectionId={"enrolledCourses"}
+          courseRecords={enrolledRecords}
+          sectionTitle={"Enrolled Courses"}
+          sectionNoneFoundExplanation={"You are not enrolled in any courses yet."}
+          displayCompletionStatus={true}
+          button={
+            <Button variant={"outline"} asChild className={"py-5 w-48 text-sm"}>
+              <a href={"#marketplace"}>
+                <RxChevronDown/>
+                Enroll in a Course
+              </a>
+            </Button>
+          }
+        />
 
         {/* Managed Courses Section */}
-        <CoursesSection courseRecords={managingRecords} sectionTitle={"Courses You Teach"} sectionNoneFoundExplanation={"You have not created any courses yet."} />
+        <CoursesSection
+          sectionId={"managedCourses"}
+          courseRecords={managingRecords}
+          sectionTitle={"Courses You Teach"}
+          sectionNoneFoundExplanation={"You have not created any courses yet."}
+          button={
+            <Button asChild className={"py-5 w-48 text-sm"}>
+              <Link href={"/courses/new"}>
+                <RxPlus/>
+                Create New Course
+              </Link>
+            </Button>
+          }
+        />
 
         {/* Marketplace Section */}
-        <CoursesSection courseRecords={marketplaceCourses} sectionTitle={"Course Marketplace"} sectionNoneFoundExplanation={"Currently no available courses."} />
+        <CoursesSection
+          sectionId={"marketplace"}
+          courseRecords={marketplaceCourses}
+          sectionTitle={"Course Marketplace"}
+          sectionNoneFoundExplanation={"Currently no available courses."}
+        />
       </div>
     </>
   );

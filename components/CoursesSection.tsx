@@ -1,6 +1,7 @@
 import Link from "next/link";
 import moduleIcon from "@/components/icons/module";
 import peopleIcon from "@/components/icons/people";
+import {ReactNode} from "react";
 
 interface CourseInterface {
   _count: {
@@ -13,10 +14,12 @@ interface CourseInterface {
 }
 
 interface CoursesSectionProps {
+  sectionId?: string;
   courseRecords: { course: CourseInterface, courseStatus?: string | null}[];
   sectionTitle: string;
   sectionNoneFoundExplanation: string;
   displayCompletionStatus?: boolean | null;
+  button?: ReactNode;
 }
 
 
@@ -38,10 +41,14 @@ const renderCourseCard = (course: CourseInterface, href: string, badges: React.R
   </Link>
 );
 
-export default function CoursesSection({courseRecords, sectionTitle, sectionNoneFoundExplanation, displayCompletionStatus}: CoursesSectionProps) {
+export default function CoursesSection({sectionId, courseRecords, sectionTitle, sectionNoneFoundExplanation, displayCompletionStatus, button}: CoursesSectionProps) {
   return (
-    <section>
-      <h2 className="text-2xl font-bold border-b pb-3 mb-6">{sectionTitle}</h2>
+    <section id={sectionId}>
+      <div className={"flex justify-between place-items-center"}>
+        <h2 className="text-2xl font-bold">{sectionTitle}</h2>
+        {button ? button : <></>}
+      </div>
+      <hr className={"my-2 border-b"} />
       {courseRecords.length === 0 ? (
         <div className="bg-slate-50 border border-dashed rounded-xl p-8 text-center">
           <p className="text-slate-500">{sectionNoneFoundExplanation}</p>
@@ -54,7 +61,7 @@ export default function CoursesSection({courseRecords, sectionTitle, sectionNone
             <>
               <div className="flex items-center gap-1.5 text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">
                 {moduleIcon()}
-                <span>{course._count.modules} Module{course._count.modules > 1 ? "s" : ""}</span>
+                <span>{course._count.modules} Module{course._count.modules !== 1 ? "s" : ""}</span>
               </div>
               {
                 displayCompletionStatus ? (

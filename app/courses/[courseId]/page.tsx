@@ -51,7 +51,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
     <>
       <RoleSetter role={roleLabel}/>
       
-      <div className="container mx-auto p-4 md:p-8 max-w-5xl space-y-12 pb-24">
+      <div className="container mx-auto p-8 max-w-6xl space-y-16 pb-24">
         {/* Header section (Hero) */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-slate-50 p-8 rounded-2xl border border-slate-100 relative overflow-hidden">
           {/* Decorative background element */}
