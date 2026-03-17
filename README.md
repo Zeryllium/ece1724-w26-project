@@ -3,9 +3,9 @@
 A full-stack personalized learning platform.
 
 ## Team Information
-David Zhang
-Tyler Sun
-Rohan 
+David Zhang  
+Tyler Sun  
+Rohan   
 
 ---
 

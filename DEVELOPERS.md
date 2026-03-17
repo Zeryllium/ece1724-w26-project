@@ -17,6 +17,11 @@ npm install
 # BETTER_AUTH_URL=
 ```
 
+The Better Auth secret can be generated through https://better-auth.com/docs/installation or using the following:
+```bash
+openssl rand -base64 32
+```
+
 ## 2. Database Initialization
 
 We use Prisma as our ORM. If this is a fresh pull, you must generate the client and push the schema to your database.
