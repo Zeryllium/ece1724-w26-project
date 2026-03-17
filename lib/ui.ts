@@ -3,9 +3,6 @@
 export const inputClass =
   "shadow appearance-none border rounded-md p-2 w-full bg-background focus:outline-none focus:ring-2 focus:ring-ring";
 
-export const selectClass =
-  "shadow appearance-none border rounded-md p-2 w-full bg-background focus:outline-none focus:ring-2 focus:ring-ring min-h-[120px]";
-
 export const mainContainer =
   "container mx-auto p-8 max-w-6xl space-y-16"
 
@@ -31,23 +28,23 @@ export const textLinkBack =
   "transition duration-250 ease-in-out text-slate-500 hover:text-slate-800"
 
 export const lineBreak =
-  "my-2 border-b"
+  "my-2 border-b border-slate-300"
 
 /*
   Card Themes
  */
 
 export const cardSectionFlex =
-  "flex justify-center justify-items-center bg-slate-50 border border-dashed rounded-md"
+  "flex justify-center justify-items-center bg-slate-50 border border-slate-100 rounded-md"
 
 export const cardClass =
-  "group flex flex-col md:flex-row items-center justify-self-stretch gap-6 rounded-md p-6 m-2 transition duration-250 shadow-sm hover:shadow-md border border-slate-100 hover:border-slate-200 bg-white"
+  "group flex flex-col items-center justify-self-stretch rounded-md transition duration-250 shadow-sm hover:shadow-md border border-slate-100 hover:border-slate-200 bg-white"
 
 export const cardTextTitle =
-  "text-xl font-bold transition duration-100 ease-in-out bg-clip-text bg-slate-900 text-transparent hover:bg-linear-to-r hover:from-blue-500 hover:to-indigo-700"
+  "text-xl font-bold line-clamp-1 transition duration-100 ease-in-out bg-clip-text bg-slate-900 text-transparent group-hover:bg-linear-to-r group-hover:from-blue-500 group-hover:to-indigo-700"
 
 export const cardTextDescription =
-  "text-sm text-slate-600"
+  "text-sm line-clamp-2 text-slate-600"
 
 export const cardTextURI =
   "text-sm font-semibold text-blue-600 hover:text-blue-800 hover:underline"
@@ -99,3 +96,12 @@ export const badgeModuleAssignment =
 
 export const badgeModuleOther =
   `${badgeBaseStyling} bg-neutral-100 text-neutral-700 border-neutral-200`
+
+export const badgeNumberEnrolled =
+  `${badgeBaseStyling} bg-purple-100 text-purple-700 border-purple-200`
+
+export const badgeIncomplete =
+  `${badgeBaseStyling} bg-amber-100 text-amber-700 border-amber-200`
+
+export const badgePassed =
+  `${badgeBaseStyling} bg-green-100 text-green-700 border-green-200`

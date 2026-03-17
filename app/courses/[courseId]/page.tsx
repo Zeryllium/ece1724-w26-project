@@ -110,7 +110,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
             ) : (
               <>
                 {course.modules.map((mod) => (
-                  <div key={mod.moduleId} className={UI.cardClass}>
+                  <div key={mod.moduleId} className={`${UI.cardClass} p-6 m-2 gap-6 md:flex-row`}>
                     <div className="flex-1">
                       <div className={`${UI.badgeTray} mb-3`}>
                         <span className={UI.badgeModuleIndex}>

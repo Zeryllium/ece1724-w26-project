@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {ReactNode} from "react";
-import {lineBreak, textH2Style} from "@/lib/ui";
+import * as UI from "@/lib/ui";
 import {RxCardStack, RxPeople} from "react-icons/rx";
 
 interface CourseInterface {
@@ -24,17 +24,19 @@ interface CoursesSectionProps {
 
 
 const renderCourseCard = (course: CourseInterface, href: string, badges: React.ReactNode) => (
-  <Link key={course.courseId} href={href} className="block group h-full">
+  <Link key={course.courseId} href={href} className="block group">
     <div
-      className="bg-white border rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300 transform group-hover:-translate-y-1 h-full flex flex-col justify-between">
+      className={`${UI.cardClass} p-6 h-48 justify-between items-start`}>
       <div>
         <h3
-          className="font-bold text-xl mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">{course.courseName}</h3>
-        <p className="text-muted-foreground text-sm line-clamp-2 leading-relaxed">
+          className={`${UI.cardTextTitle}`}>
+          {course.courseName}
+        </h3>
+        <p className={UI.cardTextDescription}>
           {course.courseDescription || "No description provided."}
         </p>
       </div>
-      <div className="mt-6 pt-4 border-t flex justify-between items-center text-sm font-medium">
+      <div className={`${UI.badgeTray} border-t-2 pt-2 w-full justify-center gap-10`}>
         {badges}
       </div>
     </div>
@@ -45,41 +47,46 @@ export default function CoursesSection({sectionId, courseRecords, sectionTitle, 
   return (
     <section id={sectionId}>
       <div className={"flex justify-between place-items-center"}>
-        <h2 className={textH2Style}>{sectionTitle}</h2>
+        <h2 className={UI.textH2Style}>{sectionTitle}</h2>
         {button ? button : <></>}
       </div>
-      <hr className={lineBreak} />
-      {courseRecords.length === 0 ? (
-        <div className="bg-slate-50 border border-dashed rounded-xl p-8 text-center">
-          <p className="text-slate-500">{sectionNoneFoundExplanation}</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {courseRecords.map(({course, courseStatus}) => renderCourseCard(
-            course,
-            `/courses/${course.courseId}`,
-            <>
-              <div className="flex items-center gap-1.5 text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">
-                <RxCardStack />
-                <span>{course._count.modules} Module{course._count.modules !== 1 ? "s" : ""}</span>
-              </div>
-              {
-                displayCompletionStatus ? (
-                  <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider ${courseStatus === 'PASSED' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
-                    {courseStatus}
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1.5 text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md">
-                    <RxPeople />
-                    <span>{course._count.enrollments} Enrolled</span>
-                  </div>
-                )
-              }
+      <hr className={UI.lineBreak} />
+      <div className={`${UI.cardSectionFlex} flex-col min-h-60`}>
+        {courseRecords.length === 0 ? (
+          <p className="text-muted-foreground text-center">
+            {sectionNoneFoundExplanation}
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 m-2">
+            {courseRecords.map(({course, courseStatus}) => renderCourseCard(
+              course,
+              `/courses/${course.courseId}`,
+              <>
+                <div className={`flex items-center gap-1.5 ${UI.badgeModuleOther}`}>
+                  <RxCardStack />
+                  <span>{course._count.modules} Module{course._count.modules !== 1 ? "s" : ""}</span>
+                </div>
+                {
+                  displayCompletionStatus ? (
+                    <div className={`flex items-center gap-1.5 ${
+                      courseStatus === 'PASSED' ? 
+                        UI.badgePassed : UI.badgeIncomplete
+                    }`}>
+                      {courseStatus}
+                    </div>
+                  ) : (
+                    <div className={`flex items-center gap-1.5 ${UI.badgeNumberEnrolled}`}>
+                      <RxPeople />
+                      <span>{course._count.enrollments} Enrolled</span>
+                    </div>
+                  )
+                }
 
-            </>
-          ))}
-        </div>
-      )}
+              </>
+            ))}
+          </div>
+        )}
+      </div>
     </section>
   )
 }
