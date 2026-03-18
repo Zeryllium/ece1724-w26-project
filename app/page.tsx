@@ -7,13 +7,7 @@ import { headers } from "next/dist/server/request/headers";
 import { auth } from "@/lib/auth";
 
 export default async function Home() {
-  // return (
-  //   // TODO: Temporary
-  //   <Button variant={"destructive"} className={"w-full h-full p-64 text-9xl"}>
-  //     <Link href={"/login"}> Login </Link>
-  //   </Button>
-  // )
-  // /*
+
   const session = await auth.api.getSession({
     headers: await headers()
   });
@@ -27,9 +21,14 @@ export default async function Home() {
           <h1 className="text-center mx-auto text-6xl font-bold tracking-tight text-black dark:text-zinc-50">
             DEMOKRIT.OS
           </h1>
-          <h2 className="text-2xl font-semibold leading-snug tracking-tight text-gray-700 dark:text-zinc-400">
-            Democritus - <span className="italic">"chosen of the people"</span>
-          </h2>
+          <div className="flex flex-col gap-2 text-center">
+            <h2 className="text-2xl font-semibold leading-snug tracking-tight text-gray-800 dark:text-zinc-400">
+              Democritus - <span className="italic">"chosen of the people"</span>
+            </h2>
+            <h3 className="text-xl font-snormal leading-snug tracking-tight text-gray-600 dark:text-zinc-400">
+              A learning platform chosen and designed by you.
+            </h3>
+          </div>
           <div className="flex flex-row gap-4 text-base font-medium">
             <Link href="/login">
               <Button variant="outline" className={`flex justify-center items-center h-12 gap-4 ${UI.buttonBaseStyling}`}>
@@ -42,6 +41,12 @@ export default async function Home() {
               </Button>
             </Link>
           </div>
+          <Image
+              src="/democritus-bust.jpg"
+              alt="democritus statue"
+              width={354}
+              height={480}
+            />
         </main>
       </div>
     )
