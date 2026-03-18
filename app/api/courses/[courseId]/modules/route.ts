@@ -68,7 +68,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
           moduleTitle: sanitizedTitle,
           moduleDescription: sanitizedDescription,
           moduleType: moduleType as "LECTURE" | "ASSIGNMENT" | "QUIZ",
-          moduleResourceUri: sanitizedUri,
+          //TODO
           quizConfig: validQuizConfig ? JSON.parse(JSON.stringify(validQuizConfig)) : null,
         },
       });

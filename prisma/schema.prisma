@@ -24,6 +24,11 @@ enum ModuleType {
   QUIZ
 }
 
+enum SubmissionType {
+  FILE
+  QUIZ
+}
+
 enum SubmissionStatus {
   INCOMPLETE
   PASS
@@ -53,6 +58,7 @@ model User {
   image         String?
   sessions      Session[]
   accounts      Account[]
+  uploads       File[]
 
   @@unique([email])
   @@map("user")
@@ -90,15 +96,15 @@ model Module {
   courseId          String     @db.Uuid
   moduleIndex       Int
   moduleType        ModuleType
-  moduleResourceUri String
   moduleTitle       String
   moduleDescription String
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
-  quizConfig        Json?      // Stores: { timeLimit, maxAttempts, questions: [{ id, text, options: [], correctOptionIndex }] }
+  quizConfig        Json? // Stores: { timeLimit, maxAttempts, questions: [{ id, text, options: [], correctOptionIndex }] }
 
-  course      Course       @relation("CourseToModule", fields: [courseId], references: [courseId])
-  submissions Submission[]
+  course          Course       @relation("CourseToModule", fields: [courseId], references: [courseId])
+  moduleResources File[]       @relation("ModuleFiles")
+  submissions     Submission[]
 }
 
 model Managing {
@@ -123,16 +129,19 @@ model Enrollment {
 }
 
 model Submission {
+  id               String           @id @default(dbgenerated("pg_catalog.gen_random_uuid()")) @db.Uuid
   studentId        String
   moduleId         String           @db.Uuid
   submissionStatus SubmissionStatus
   submissionGrade  Decimal
-  quizState        Json?            // Stores: { attempts: number, answers: Record<string, number>, timeSpent: number }
+  submissionType   SubmissionType   @default(FILE) // Migration required a default value
+  quizState        Json? // Stores: { attempts: number, answers: Record<string, number>, timeSpent: number }
 
   student User   @relation(fields: [studentId], references: [id])
   module  Module @relation(fields: [moduleId], references: [moduleId])
+  files   File[] @relation("SubmissionFiles")
 
-  @@id([studentId, moduleId])
+  @@unique([studentId, moduleId])
 }
 
 model Session {
@@ -181,4 +190,20 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model File {
+  id           String   @id @default(dbgenerated("pg_catalog.gen_random_uuid()")) @db.Uuid
+  s3Path       String   @unique // GCS bucket URI
+  originalName String
+  mimeType     String
+  size         Int
+  createdAt    DateTime @default(now())
+
+  uploaderId   String
+  uploader     User        @relation(fields: [uploaderId], references: [id])
+  moduleId     String?     @db.Uuid
+  module       Module?     @relation("ModuleFiles", fields: [moduleId], references: [moduleId])
+  submissionId String?     @db.Uuid
+  submission   Submission? @relation("SubmissionFiles", fields: [submissionId], references: [id])
 }

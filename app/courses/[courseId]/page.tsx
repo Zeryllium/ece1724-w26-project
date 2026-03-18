@@ -33,7 +33,10 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
       where: {courseId},
       include: {
         modules: {
-          orderBy: {moduleIndex: 'asc'}
+          orderBy: {moduleIndex: 'asc'},
+          include: {
+            moduleResources: true
+          }
         }
       }
     });
@@ -128,17 +131,18 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
                           {mod.moduleDescription}
                         </p>
                       )}
-                      {mod.moduleType !== "QUIZ" && mod.moduleResourceUri ? (
+                      {mod.moduleType !== "QUIZ" && mod.moduleResources.length > 0 ? (
                         _isManaging || _isEnrolled ? (
-                          <a
-                            href={mod.moduleResourceUri}
-                            target="_blank"
-                            rel="noreferrer"
-                            className={`${UI.cardTextURI} inline-flex items-center gap-1 mt-2`}
-                          >
-                            View Attached Resource
-                            <RxLink1 />
-                          </a>
+                          <>{/*TODO */}</>
+                          // <a
+                          //   href={mod.moduleResources}
+                          //   target="_blank"
+                          //   rel="noreferrer"
+                          //   className={`${UI.cardTextURI} inline-flex items-center gap-1 mt-2`}
+                          // >
+                          //   View Attached Resource
+                          //   <RxLink1 />
+                          // </a>
                         ) : (
                           <p className={`${UI.cardTextURILocked} inline-flex items-center gap-1 mt-2`}>
                             <RxLockClosed />

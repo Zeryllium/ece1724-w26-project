@@ -57,6 +57,13 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
         studentId: session.user.id,
         moduleId: moduleData.moduleId
       }
+    },
+    include: {
+      files: {
+        orderBy: {
+          createdAt: "asc"
+        }
+      }
     }
   });
 
@@ -103,16 +110,17 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
            {moduleData.moduleDescription || "No description provided."}
          </p>
          
-         {moduleData.moduleType !== "QUIZ" && moduleData.moduleResourceUri ? (
+         {moduleData.moduleType !== "QUIZ" && submission.files.length > 0 ? (
            <div className="mt-8">
-             <a 
-                href={moduleData.moduleResourceUri} 
-                target="_blank" 
-                rel="noreferrer"
-                className={buttonBlueIndigo + " inline-block"}
-             >
-                Open Resource
-             </a>
+             <>{/*TODO */}</>
+             {/*<a */}
+             {/*   href={moduleData.moduleResourceUri} */}
+             {/*   target="_blank" */}
+             {/*   rel="noreferrer"*/}
+             {/*   className={buttonBlueIndigo + " inline-block"}*/}
+             {/*>*/}
+             {/*   Open Resource*/}
+             {/*</a>*/}
            </div>
          ) : null}
       </div>
