@@ -11,7 +11,7 @@ test.describe('Instructor Flow Suite', () => {
     await page.click('button[type="submit"]');
     await expect(page).toHaveURL(/.*\/courses/);
 
-    await page.click('text="+ Create New Course"');
+    await page.click('text="Create Course"');
     await expect(page).toHaveURL(/.*\/courses\/new/);
 
     const courseName = `Demo Course ${Date.now()}`;

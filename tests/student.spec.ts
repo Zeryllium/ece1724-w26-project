@@ -15,7 +15,7 @@ test.describe('Student UI Flow Suite', () => {
     await expect(page).toHaveURL(/.*\/courses/);
     
     // They are a brand new user, so their Enrolled list is blank!
-    await expect(page.locator('text="You aren\'t enrolled in any courses yet."')).toBeVisible();
+    await expect(page.locator('text="You are not enrolled in any courses yet."')).toBeVisible();
 
     // 2. But the seeder has an instructor. Let's create a quick course with the instructor first via API?
     // In a pure UI test, this is tricky. We'll just assert that the 3 generic blocks exist for now, 

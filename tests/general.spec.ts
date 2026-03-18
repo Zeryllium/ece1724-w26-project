@@ -34,7 +34,7 @@ test.describe('General User Flows', () => {
     await page.click('button[type="submit"]');
     await expect(page).toHaveURL(/.*\/courses/);
 
-    await page.click('text="+ Create New Course"');
+    await page.click('text="Create Course"');
     await expect(page).toHaveURL(/.*\/courses\/new/);
 
     // No badge should preemptively exist before creation since they haven't submitted
