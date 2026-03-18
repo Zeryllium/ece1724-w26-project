@@ -2,7 +2,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import CreateLoginForm from "@/components/CreateLoginForm";
+import LoginFormWrapper from "@/components/LoginFormWrapper";
 import { auth } from "@/lib/auth";
 import {textGradientTheme, textH1Style, textLinkBack} from "@/lib/ui";
 
@@ -24,7 +24,7 @@ export default async function Login() {
         </div>
 
         <section className="rounded-lg border bg-card p-6">
-          <CreateLoginForm />
+          <LoginFormWrapper />
           <p className={"text-sm mt-2"}>
             Don't have an account? <Link href={"/signup"} className={`${textGradientTheme} text-sm transition duration-250 ease-in-out border-b border-b-transparent hover:border-b-blue-500 font-semibold`}>Register</Link>
           </p>
