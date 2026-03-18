@@ -117,7 +117,7 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
         />
       </div>
 
-      <Button type="submit" disabled={loading} className="w-full">
+      <Button type="submit" disabled={loading} className={"w-full"}>
         {loading ? "Adding..." : "Add Module"}
       </Button>
     </form>

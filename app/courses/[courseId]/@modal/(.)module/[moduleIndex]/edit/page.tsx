@@ -5,7 +5,9 @@ import EditModuleForm from "@/components/EditModuleForm";
 
 
 export default async function EditModuleModal(
-  {params}: { params: { courseId: string; moduleIndex: string }}) {
+  props: {params: Promise<{ courseId: string; moduleIndex: string }>}) {
+
+  const params = await props.params
 
   const index = parseInt(params.moduleIndex, 10);
   if (isNaN(index)) notFound();
@@ -26,7 +28,6 @@ export default async function EditModuleModal(
         courseId={params.courseId}
         moduleIndex={index}
         initialData={courseModule}
-        onCancel={function (): void {}}
       />
     </Modal>
   );

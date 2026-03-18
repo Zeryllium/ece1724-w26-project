@@ -127,7 +127,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
                         </span>
                       </div>
                       <Link
-                        href={`/courses/${course.courseId}/${mod.moduleIndex}`}
+                        href={`/courses/${course.courseId}/module/${mod.moduleIndex}`}
                         className={`${UI.cardTextTitle} max-w-3xl`}>
                         {mod.moduleTitle}
                       </Link>
@@ -155,9 +155,8 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
                     </div>
 
                     {_isManaging && (
-                      //TODO: Convert this into a modal instead
                       <div className="flex flex-row md:flex-col gap-2 items-start md:items-end justify-start shrink-0">
-                        <Link href={`/courses/${course.courseId}/${mod.moduleIndex}`}>
+                        <Link href={`/courses/${courseId}/module/${mod.moduleIndex}/edit/`}>
                           <button className={`${UI.buttonBaseStyling} ${UI.buttonGrey}`}>
                             Edit Module
                           </button>
@@ -170,7 +169,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
               </>
             )}
             {_isManaging ? (
-              <Link href={`/courses/${courseId}/new_module/`} className={"flex justify-center"}>
+              <Link href={`/courses/${courseId}/module/new/`} className={"flex justify-center"}>
                 <button className={`${UI.cardClass} p-6 m-2 w-full`}>
                   <RxCardStackPlus />
                 </button>

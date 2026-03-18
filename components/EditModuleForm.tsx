@@ -2,18 +2,16 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import {useRouter} from "next/navigation";
 
 export default function EditModuleForm({ 
   courseId, 
   moduleIndex, 
-  initialData, 
-  onCancel 
+  initialData,
 }: { 
   courseId: string; 
   moduleIndex: number; 
   initialData: any;
-  onCancel: () => void;
 }) {
   const [moduleTitle, setModuleTitle] = useState(initialData.moduleTitle || "");
   const [moduleDescription, setModuleDescription] = useState(initialData.moduleDescription || "");
@@ -48,10 +46,10 @@ export default function EditModuleForm({
       }
 
       router.refresh();
-      onCancel(); // Close the form
       
     } catch (err: any) {
       setError(err.message);
+    } finally {
       setLoading(false);
     }
   }
@@ -118,14 +116,9 @@ export default function EditModuleForm({
         />
       </div>
 
-      <div className="flex gap-2">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={loading}>
-          {loading ? "Saving..." : "Save Changes"}
-        </Button>
-      </div>
+      <Button type="submit" disabled={loading} className={"w-full"}>
+        {loading ? "Saving..." : "Save Changes"}
+      </Button>
     </form>
   );
 }

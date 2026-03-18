@@ -9,7 +9,6 @@ export default function EditModuleWrapper({ courseId, moduleIndex, initialData }
          courseId={courseId}
          moduleIndex={moduleIndex}
          initialData={initialData}
-         onCancel={()=> {}}
       />
     </div>
   );

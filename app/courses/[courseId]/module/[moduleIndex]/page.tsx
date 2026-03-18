@@ -3,8 +3,8 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import {auth, isManaging, ROLES} from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import ModuleEditorWrapper from "@/components/ModuleEditorWrapper";
 import {mainContainer} from "@/lib/ui";
+import * as UI from "@/lib/ui";
 
 export default async function ModulePage(props: { params: Promise<{ courseId: string; moduleIndex: string }> }) {
   const { courseId, moduleIndex } = await props.params;
@@ -65,7 +65,11 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
       </div>
 
       {canEdit && (
-         <ModuleEditorWrapper courseId={courseId} moduleIndex={index} initialData={moduleData} />
+        <Link href={`/courses/${courseId}/module/${moduleIndex}/edit/`}>
+          <button className={`${UI.buttonBaseStyling} ${UI.buttonGrey}`}>
+            Edit Module
+          </button>
+        </Link>
       )}
     </div>
   );

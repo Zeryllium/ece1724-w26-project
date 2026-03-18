@@ -1,9 +1,9 @@
+import EditModuleWrapper from "@/components/EditModuleWrapper";
 import {auth, isManaging, ROLES} from "@/lib/auth";
 import {headers} from "next/headers";
 import {forbidden, notFound, redirect} from "next/navigation";
 import * as UI from "@/lib/ui";
 import { prisma } from "@/lib/prisma";
-import EditModuleWrapper from "@/components/EditModuleWrapper";
 
 export default async function ModuleEditPage(props: { params: Promise<{ courseId: string, moduleIndex: string }> }) {
   const {courseId, moduleIndex} = await props.params;
@@ -38,7 +38,7 @@ export default async function ModuleEditPage(props: { params: Promise<{ courseId
   return (
     <div className={UI.mainContainer}>
       <h1 className={UI.textH1Style}>
-        Editing Module {}
+        Editing Module {moduleIndex}
       </h1>
       <div className={"border p-6 rounded-lg shadow-sm bg-white"}>
         <EditModuleWrapper
