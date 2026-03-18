@@ -24,38 +24,39 @@ test.describe('Instructor Flow Suite', () => {
 
     expect(response.status()).toBe(201);
 
-    // Contextual route check
+    // make sure we landed on the course page
     await expect(page).toHaveURL(/.*\/courses\/.+/);
     await expect(page.locator('h1')).toContainText(courseName);
 
-    // Verify INSTRUCTOR badge is present contextually for the creator
+    // creator should have the instructor badge
     await expect(page.locator('span', { hasText: 'INSTRUCTOR' }).first()).toBeVisible();
 
+    await page.getByTestId('add-module-button').click();
     await page.fill('input#moduleTitle', 'Demo Module 1');
     await page.selectOption('select#moduleType', 'LECTURE');
     await page.fill('input#moduleResourceUri', 'https://example.com/video');
     await page.fill('textarea#moduleDescription', 'First module description');
     await page.click('button:has-text("Add Module")');
 
-    // The module should appear on the page
-    await expect(page.locator('h3', { hasText: 'Demo Module 1' })).toBeVisible();
+    // check if module actually shows up
+    await expect(page.locator('a', { hasText: 'Demo Module 1' })).toBeVisible();
     await expect(page.locator('span', { hasText: 'Module 1' })).toBeVisible();
 
-    await page.click('a:has-text("Edit Module")');
-    // Should route to the module edit page
+    await page.click('a:has-text("View Details")');
+    // verify navigation to edit view
     await expect(page).toHaveURL(/.*\/courses\/.+\/1/);
 
-    // Click 'Edit Module Settings' button
+    // open the settings modal
     await page.click('button:has-text("Edit Module Settings")');
 
-    // Update the module title and save
+    // try changing the title
     await page.fill('input#moduleTitle', 'Updated Demo Module');
     await page.click('button:has-text("Save Changes")');
 
-    // Wait for the form to close internally (button disappears)
+    // give the modal time to close
     await expect(page.locator('button:has-text("Save Changes")')).toBeHidden();
 
-    // Title in the header should update
+    // did the title update?
     await expect(page.locator('h1')).toContainText('Updated Demo Module');
 
     await page.click('a:has-text("Back to")');
@@ -64,16 +65,16 @@ test.describe('Instructor Flow Suite', () => {
     page.once('dialog', dialog => dialog.accept()); // Automatically accept the confirm alert
     await page.click('button:text-is("Delete")');
 
-    // The module should disappear
-    await expect(page.locator('h3', { hasText: 'Updated Demo Module' })).toBeHidden();
+    // ensure module is gone
+    await expect(page.locator('a', { hasText: 'Updated Demo Module' })).toBeHidden();
 
     page.once('dialog', dialog => dialog.accept()); // Accept confirm alert
     await page.click('button:text-is("Delete Course")');
 
-    // Should route back to dashboard
+    // verify we're back on dashboard
     await expect(page).toHaveURL(/.*\/courses/);
 
-    // Course should not be visible anymore
+    // course must be deleted
     await expect(page.locator('h3', { hasText: courseName })).toBeHidden();
   });
 });

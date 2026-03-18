@@ -3,7 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import {auth, isEnrolled, isManaging, ROLES} from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import CreateModuleForm from "@/components/CreateModuleForm";
+
 import DeleteModuleButton from "@/components/DeleteModuleButton";
 import EnrollButton from "@/components/EnrollButton";
 import RoleSetter from "@/components/RoleSetter";
@@ -38,15 +38,11 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
       }
     });
   } catch {
-    // Invalid uuid or course not found
-
-    // Note: Code Analysis may indicate that course is possibly null. However,
-    // findUniqueOrThrow will never return a null object. A database miss would
-    // always throw an Exception instead.
+    // gracefully handle bad course ids
     notFound();
   }
 
-  // Determine contextual role for Navbar
+  // figure out what role badge to show
   let roleLabel: string | null = null;
   if (_isManaging) roleLabel = ROLES.INSTRUCTOR;
   else if (_isEnrolled) roleLabel = ROLES.STUDENT;
@@ -56,9 +52,9 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
       <RoleSetter role={roleLabel}/>
       
       <div className={UI.mainContainer}>
-        {/* Header section (Hero) */}
+        {/* hero section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-slate-50 p-8 rounded-2xl border border-slate-100 relative overflow-hidden">
-          {/* Decorative background element */}
+          {/* background blur */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-slate-200/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
           
           <div className="relative z-10 w-full md:w-2/3">
@@ -82,7 +78,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
              ) : !_isEnrolled ? (
                <EnrollButton courseId={course.courseId} />
              ) : (
-               <button disabled className={`flex justify-center items-center gap-4 ${UI.buttonBaseStyling} ${UI.buttonGreen}`}>
+               <button disabled className={`flex justify-center items-center gap-4 ${UI.buttonGreen}`}>
                  <RxCheck/>
                  Enrolled
                </button>
@@ -90,7 +86,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
           </div>
         </div>
 
-        {/* Modules List */}
+        {/* module list section */}
         <div>
           <div className={sectionFlex}>
             <h2 className={UI.textH2Style}>Course Curriculum</h2>
@@ -136,29 +132,31 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
                           {mod.moduleDescription}
                         </p>
                       )}
-                      {_isManaging || _isEnrolled ? (
-                        <a
-                          href={mod.moduleResourceUri}
-                          target="_blank"
-                          rel="noreferrer"
-                          className={`${UI.cardTextURI} inline-flex items-center gap-1 mt-2`}
-                        >
-                          View Attached Resource
-                          <RxLink1 />
-                        </a>
-                      ) : (
-                        <p className={`${UI.cardTextURILocked} inline-flex items-center gap-1 mt-2`}>
-                          <RxLockClosed />
-                          Enroll to view resources
-                        </p>
-                      )}
+                      {mod.moduleType !== "QUIZ" && mod.moduleResourceUri ? (
+                        _isManaging || _isEnrolled ? (
+                          <a
+                            href={mod.moduleResourceUri}
+                            target="_blank"
+                            rel="noreferrer"
+                            className={`${UI.cardTextURI} inline-flex items-center gap-1 mt-2`}
+                          >
+                            View Attached Resource
+                            <RxLink1 />
+                          </a>
+                        ) : (
+                          <p className={`${UI.cardTextURILocked} inline-flex items-center gap-1 mt-2`}>
+                            <RxLockClosed />
+                            Enroll to view resources
+                          </p>
+                        )
+                      ) : null}
                     </div>
 
                     {_isManaging && (
                       <div className="flex flex-row md:flex-col gap-2 items-start md:items-end justify-start shrink-0">
-                        <Link href={`/courses/${courseId}/module/${mod.moduleIndex}/edit/`}>
-                          <button className={`${UI.buttonBaseStyling} ${UI.buttonGrey}`}>
-                            Edit Module
+                        <Link href={`/courses/${course.courseId}/module/${mod.moduleIndex}`}>
+                          <button className={`${UI.buttonGrey}`}>
+                            View Details
                           </button>
                         </Link>
                         <DeleteModuleButton courseId={course.courseId} moduleIndex={mod.moduleIndex}/>
@@ -170,7 +168,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
             )}
             {_isManaging ? (
               <Link href={`/courses/${courseId}/module/new/`} className={"flex justify-center"}>
-                <button className={`${UI.cardClass} p-6 m-2 w-full`}>
+                <button data-testid="add-module-button" className={`${UI.cardClass} p-6 m-2 w-full`}>
                   <RxCardStackPlus />
                 </button>
               </Link>
@@ -180,18 +178,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
           </div>
         </div>
 
-        {/* Add new module form */}
-        {_isManaging && (
-          <div className="pt-10">
-            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 md:p-8">
-              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-                Add New Module
-              </h3>
-              <CreateModuleForm courseId={course.courseId} />
-            </div>
-          </div>
-        )}
+
       </div>
     </>
   );

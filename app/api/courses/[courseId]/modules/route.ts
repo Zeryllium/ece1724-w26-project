@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import {auth, isManaging, ROLES} from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { QuizConfigSchema } from "@/lib/quiz-schema";
 
 export async function POST(request: NextRequest, props: { params: Promise<{ courseId: string }> }) {
   const { courseId } = await props.params;
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
 
     // Grab the module details from the request body
     const body = await request.json();
-    const { moduleTitle, moduleDescription, moduleType, moduleResourceUri } = body;
+    const { moduleTitle, moduleDescription, moduleType, moduleResourceUri, quizConfig } = body;
 
     if (!moduleTitle || typeof moduleTitle !== "string" || moduleTitle.trim() === "") {
       return NextResponse.json({ error: "moduleTitle is required" }, { status: 400 });
@@ -31,13 +32,23 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
     if (!moduleType || !["LECTURE", "ASSIGNMENT", "QUIZ"].includes(moduleType)) {
       return NextResponse.json({ error: "moduleType must be LECTURE, ASSIGNMENT, or QUIZ" }, { status: 400 });
     }
-    if (!moduleResourceUri || typeof moduleResourceUri !== "string" || moduleResourceUri.trim() === "") {
-      return NextResponse.json({ error: "moduleResourceUri is required" }, { status: 400 });
+    // We bypass the resource uri check if the module is a quiz!
+    if (moduleType !== "QUIZ" && (!moduleResourceUri || typeof moduleResourceUri !== "string" || moduleResourceUri.trim() === "")) {
+      return NextResponse.json({ error: "moduleResourceUri is required for non-quiz modules" }, { status: 400 });
+    }
+
+    let validQuizConfig = null;
+    if (moduleType === "QUIZ") {
+      const parsedConfig = QuizConfigSchema.safeParse(quizConfig);
+      if (!parsedConfig.success) {
+         return NextResponse.json({ error: "Invalid quiz configuration payload", details: parsedConfig.error.flatten() }, { status: 400 })
+      }
+      validQuizConfig = parsedConfig.data;
     }
 
     const sanitizedTitle = moduleTitle.trim();
     const sanitizedDescription = typeof moduleDescription === "string" ? moduleDescription.trim() : "";
-    const sanitizedUri = moduleResourceUri.trim();
+    const sanitizedUri = moduleResourceUri ? moduleResourceUri.trim() : "";
 
     // We need to assign a sequential index to the new module. We'll find the highest current index and just add 1. Doing this inside a transaction keeps it safe from race conditions.
     const newModule = await prisma.$transaction(async (tx) => {
@@ -58,6 +69,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
           moduleDescription: sanitizedDescription,
           moduleType: moduleType as "LECTURE" | "ASSIGNMENT" | "QUIZ",
           moduleResourceUri: sanitizedUri,
+          quizConfig: validQuizConfig ? JSON.parse(JSON.stringify(validQuizConfig)) : null,
         },
       });
     });

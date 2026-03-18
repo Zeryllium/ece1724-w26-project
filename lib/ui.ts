@@ -60,16 +60,16 @@ export const buttonBaseStyling =
   "py-2.5 px-6 rounded-xl font-bold shadow-md w-auto md:w-42 transition duration-250 ease-in-out"
 
 export const buttonBlueIndigo =
-  `${gradientTheme} hover:bg-linear-to-r hover:from-blue-500 hover:to-indigo-700 text-white`
+  `${buttonBaseStyling} ${gradientTheme} hover:bg-linear-to-r hover:from-blue-500 hover:to-indigo-700 text-white`
 
 export const buttonRed =
-  "bg-red-100 hover:bg-red-200 text-red-500 border border-red-500"
+  `${buttonBaseStyling} bg-red-100 hover:bg-red-200 text-red-500 border border-red-500`
 
 export const buttonGreen =
-  "bg-green-100 text-green-800 border border-lime-400"
+  `${buttonBaseStyling} bg-green-100 text-green-800 border border-lime-400`
 
 export const buttonGrey =
-  "bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300"
+  `${buttonBaseStyling} bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300`
 
 
 /*

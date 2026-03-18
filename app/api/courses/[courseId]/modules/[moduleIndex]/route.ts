@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import {auth, isManaging, ROLES} from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { QuizConfigSchema } from "@/lib/quiz-schema";
 
 export async function PUT(request: NextRequest, props: { params: Promise<{ courseId: string, moduleIndex: string }> }) {
   const { courseId, moduleIndex } = await props.params;
@@ -39,7 +40,7 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ cours
 
     // Sanitize and prepare the update payload
     const body = await request.json();
-    const { moduleTitle, moduleDescription, moduleType, moduleResourceUri } = body;
+    const { moduleTitle, moduleDescription, moduleType, moduleResourceUri, quizConfig } = body;
     
     const updateData: any = {};
     if (moduleTitle !== undefined) {
@@ -55,13 +56,24 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ cours
       updateData.moduleType = moduleType;
     }
     if (moduleResourceUri !== undefined) {
-      if (typeof moduleResourceUri !== "string" || moduleResourceUri.trim() === "") {
+      if (typeof moduleResourceUri !== "string") {
+        return NextResponse.json({ error: "moduleResourceUri must be a string" }, { status: 400 });
+      }
+      const typeToCheck = moduleType ?? targetModule.moduleType;
+      if (typeToCheck !== "QUIZ" && moduleResourceUri.trim() === "") {
         return NextResponse.json({ error: "moduleResourceUri must be a non-empty string" }, { status: 400 });
       }
       updateData.moduleResourceUri = moduleResourceUri.trim();
     }
     if (moduleDescription !== undefined) {
       updateData.moduleDescription = typeof moduleDescription === "string" ? moduleDescription.trim() : "";
+    }
+    if (quizConfig !== undefined) {
+       const parsedConfig = QuizConfigSchema.safeParse(quizConfig);
+       if (!parsedConfig.success) {
+          return NextResponse.json({ error: "Invalid quiz configuration payload", details: parsedConfig.error.flatten() }, { status: 400 })
+       }
+       updateData.quizConfig = JSON.parse(JSON.stringify(parsedConfig.data));
     }
 
     if (Object.keys(updateData).length === 0) {

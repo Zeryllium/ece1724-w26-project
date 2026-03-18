@@ -95,6 +95,7 @@ model Module {
   moduleDescription String
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
+  quizConfig        Json?      // Stores: { timeLimit, maxAttempts, questions: [{ id, text, options: [], correctOptionIndex }] }
 
   course      Course       @relation("CourseToModule", fields: [courseId], references: [courseId])
   submissions Submission[]
@@ -126,6 +127,7 @@ model Submission {
   moduleId         String           @db.Uuid
   submissionStatus SubmissionStatus
   submissionGrade  Decimal
+  quizState        Json?            // Stores: { attempts: number, answers: Record<string, number>, timeSpent: number }
 
   student User   @relation(fields: [studentId], references: [id])
   module  Module @relation(fields: [moduleId], references: [moduleId])

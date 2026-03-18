@@ -2,32 +2,36 @@
 
 import { useState } from "react";
 import EditModuleForm from "./EditModuleForm";
-import { Button } from "./ui/button";
+import { buttonGrey } from "@/lib/ui";
 
-export default function ModuleEditorWrapper({ courseId, moduleIndex, initialData, children }: any) {
+export default function ModuleEditorWrapper({ courseId, moduleIndex, initialData, headerLeft, children }: any) {
   const [isEditing, setIsEditing] = useState(false);
 
-  if (isEditing) {
-    return (
-      <div className="mt-6">
-        <EditModuleForm 
-           courseId={courseId} 
-           moduleIndex={moduleIndex} 
-           initialData={initialData} 
-           onCancel={() => setIsEditing(false)} 
-        />
-      </div>
-    );
-  }
-
   return (
-    <div>
-      <div className="mt-8">
-        <Button variant="outline" onClick={() => setIsEditing(true)}>Edit Module Settings</Button>
+    <>
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-6">
+        {headerLeft}
+        {!isEditing && (
+          <div className="mt-2 text-right">
+            <button className={buttonGrey} onClick={() => setIsEditing(true)}>
+              Edit Module Settings
+            </button>
+          </div>
+        )}
       </div>
-      <div className="mt-6">
-        {children}
-      </div>
-    </div>
+
+      {isEditing ? (
+        <div className="w-full">
+          <EditModuleForm 
+             courseId={courseId} 
+             moduleIndex={moduleIndex} 
+             initialData={initialData} 
+             onCancel={() => setIsEditing(false)} 
+          />
+        </div>
+      ) : (
+        children
+      )}
+    </>
   );
 }

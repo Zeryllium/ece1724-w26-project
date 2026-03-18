@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { PUT as updateCourse } from '../app/api/courses/[courseId]/route';
+import { POST as submitQuiz } from '../app/api/courses/[courseId]/modules/[moduleIndex]/submit/route';
 import { enrollInCourse } from '../app/actions/enroll';
 import { auth } from '../lib/auth';
 import { prisma } from '../lib/prisma';
@@ -9,6 +10,7 @@ import { revalidatePath } from 'next/cache';
 // Mock dependencies
 vi.mock('@/lib/auth', () => ({
   auth: { api: { getSession: vi.fn() } },
+  isManaging: vi.fn().mockResolvedValue(false),
   ROLES: { INSTRUCTOR: 'INSTRUCTOR', STUDENT: 'STUDENT', ADMIN: 'ADMIN' },
 }));
 
@@ -25,6 +27,8 @@ vi.mock('@/lib/prisma', () => ({
     enrollment: { findUnique: vi.fn(), create: vi.fn() },
     course: { findUnique: vi.fn(), update: vi.fn() },
     managing: { findUnique: vi.fn() },
+    module: { findFirst: vi.fn() },
+    submission: { findUnique: vi.fn(), upsert: vi.fn() },
   },
 }));
 
@@ -89,6 +93,59 @@ describe('Student Enrollment API & Actions', () => {
 
       expect(res.status).toBe(403);
       expect(json.error).toContain('Forbidden');
+    });
+  });
+
+  describe('Quiz Taker Evaluation', () => {
+    const mockQuizModule = {
+       moduleId: 'm-1',
+       moduleType: 'QUIZ',
+       quizConfig: {
+          timeLimit: 10,
+          maxAttempts: 2,
+          questions: [
+            { id: 'q1', correctOptionIndex: 0 },
+            { id: 'q2', correctOptionIndex: 1 }
+          ]
+       }
+    };
+
+    it('POST /api/.../submit should automatically evaluate and track attempts for a quiz submission', async () => {
+       vi.mocked(auth.api.getSession).mockResolvedValueOnce(mockStudentSession as any);
+       vi.mocked(prisma.module.findFirst).mockResolvedValueOnce(mockQuizModule as any);
+       vi.mocked(prisma.submission.findUnique).mockResolvedValueOnce(null); // No previous submissions
+
+       const req = createMockRequest({ answers: { 'q1': 0, 'q2': 1 }, timeSpent: 120 });
+       const res = await submitQuiz(req, { params: Promise.resolve({ courseId: 'course-1', moduleIndex: '1' }) });
+       const json = await res.json();
+
+       expect(res.status).toBe(200);
+       expect(json.grade).toBe(100);
+       expect(json.isPass).toBe(true);
+       expect(json.attemptsRemaining).toBe(1);
+
+       expect(prisma.submission.upsert).toHaveBeenCalledWith(expect.objectContaining({
+          create: expect.objectContaining({ submissionGrade: 100, submissionStatus: 'PASS' })
+       }));
+    });
+
+    it('POST /api/.../submit should reject submission if max attempts are exhausted', async () => {
+       vi.mocked(auth.api.getSession).mockResolvedValueOnce(mockStudentSession as any);
+       vi.mocked(prisma.module.findFirst).mockResolvedValueOnce(mockQuizModule as any);
+       
+       // Student already used 2 attempts (max=2)
+       vi.mocked(prisma.submission.findUnique).mockResolvedValueOnce({
+          quizState: { attempts: 2, latestGrade: 50 },
+          submissionGrade: 50
+       } as any);
+
+       const req = createMockRequest({ answers: { 'q1': 0, 'q2': 0 }, timeSpent: 300 });
+       const res = await submitQuiz(req, { params: Promise.resolve({ courseId: 'course-1', moduleIndex: '1' }) });
+       const json = await res.json();
+
+       expect(res.status).toBe(403);
+       expect(json.error).toContain('Maximum attempts reached');
+       expect(prisma.submission.upsert).not.toHaveBeenCalled();
     });
   });
 });

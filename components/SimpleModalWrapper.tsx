@@ -16,7 +16,7 @@ export default function Modal({children, title}: { children: React.ReactNode, ti
         <DialogTitle className={"text-transparent"}>
           {title}
         </DialogTitle>
-        <DialogContent showCloseButton={true}  className={"w-1/2 sm:max-w-full"}>
+        <DialogContent showCloseButton={true}  className={"w-1/2 sm:max-w-full max-h-[85vh] overflow-y-auto"}>
           {children}
         </DialogContent>
       </DialogOverlay>
