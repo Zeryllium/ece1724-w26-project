@@ -8,9 +8,10 @@ import DeleteModuleButton from "@/components/DeleteModuleButton";
 import EnrollButton from "@/components/EnrollButton";
 import RoleSetter from "@/components/RoleSetter";
 import * as UI from "@/lib/ui";
-import {RxCardStack, RxCheck, RxChevronLeft, RxLink1, RxLockClosed} from "react-icons/rx";
+import {RxCardStack, RxCardStackPlus, RxCheck, RxChevronLeft, RxLink1, RxLockClosed} from "react-icons/rx";
 import CourseEditorWrapper from "@/components/CourseEditorWrapper";
 import {lineBreak, sectionFlex} from "@/lib/ui";
+
 
 export default async function CourseDetailPage(props: { params: Promise<{ courseId: string }> }) {
   const { courseId } = await props.params;
@@ -167,6 +168,15 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
                   </div>
                 ))}
               </>
+            )}
+            {_isManaging ? (
+              <Link href={`/courses/${courseId}/new_module/`} className={"flex justify-center"}>
+                <button className={`${UI.cardClass} p-6 m-2 w-full`}>
+                  <RxCardStackPlus />
+                </button>
+              </Link>
+            ) : (
+              <></>
             )}
           </div>
         </div>

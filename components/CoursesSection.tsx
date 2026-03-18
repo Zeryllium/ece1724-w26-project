@@ -81,7 +81,6 @@ export default function CoursesSection({sectionId, courseRecords, sectionTitle, 
                     </div>
                   )
                 }
-
               </>
             ))}
           </div>

@@ -57,7 +57,7 @@ export default function EditModuleForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="border p-6 rounded-lg shadow-sm space-y-4 max-w-xl bg-white">
+    <form onSubmit={handleSubmit} className="p-6 space-y-4">
       <h2 className="text-xl font-semibold">Edit Module Details</h2>
       {error && <div className="text-red-500 text-sm">{error}</div>}
       
