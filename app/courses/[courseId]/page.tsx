@@ -8,8 +8,7 @@ import DeleteModuleButton from "@/components/DeleteModuleButton";
 import EnrollButton from "@/components/EnrollButton";
 import RoleSetter from "@/components/RoleSetter";
 import * as UI from "@/lib/ui";
-import {RxCardStack, RxCardStackPlus, RxCheck, RxChevronLeft, RxLink1, RxLockClosed} from "react-icons/rx";
-import CourseEditorWrapper from "@/components/CourseEditorWrapper";
+import { RxCardStackPlus, RxCheck, RxChevronLeft, RxLink1, RxLockClosed} from "react-icons/rx";
 import {buttonBaseStyling, buttonGrey, lineBreak, sectionFlex} from "@/lib/ui";
 import DeleteCourseButton from "@/components/DeleteCourseButton";
 
@@ -100,12 +99,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
 
           <div className={`${UI.cardSectionFlex} flex-col min-h-48`}>
             {course.modules.length === 0 ? (
-              <div className={"grid grid-cols-1 justify-items-center"}>
-                <div className={"text-muted-foreground bg-white p-3 rounded-full shadow-sm w-10 h-10 justify-self-center"}>
-                  <RxCardStack />
-                </div>
-                <div className={"text-muted-foreground"}>{_isManaging ? "This course has no modules yet. Add one below." : "This course has no modules yet."}</div>
-              </div>
+              <div className={"text-muted-foreground text-center pb-6"}>{_isManaging ? "This course has no modules yet. Add one below." : "This course has no modules yet."}</div>
             ) : (
               <>
                 {course.modules.map((mod) => (
@@ -170,7 +164,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
             )}
             {_isManaging ? (
               <Link href={`/courses/${courseId}/module/new/`} className={"flex justify-center"}>
-                <button data-testid="add-module-button" className={`${UI.cardClass} p-6 m-2 w-full`}>
+                <button data-testid="add-module-button" className={`${UI.cardClass} p-6 m-2 w-full text-muted-foreground`}>
                   <RxCardStackPlus />
                 </button>
               </Link>

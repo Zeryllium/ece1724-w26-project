@@ -1,7 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { inputClass } from "@/lib/ui";
+import {buttonBaseStyling, buttonBlueIndigo, inputClass} from "@/lib/ui";
 
 type SignUpFormProps = {
   action: (formData: FormData) => void | Promise<void>;
@@ -28,9 +27,9 @@ export function SignUpForm( {action}: SignUpFormProps) {
         </label>
         <input type={"password"} name={"retype_password"} id={"retype_password"} className={inputClass} />
       </div>
-      <Button type="submit">
+      <button type="submit" className={`${buttonBaseStyling} ${buttonBlueIndigo}`}>
         Register
-      </Button>
+      </button>
     </form>
   );
 }

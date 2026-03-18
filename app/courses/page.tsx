@@ -4,10 +4,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import CoursesSection from "@/components/CoursesSection";
-import {mainContainer, textDescription, textGradientTheme, textH1Style} from "@/lib/ui";
-import { Button } from "@/components/ui/button";
-import { RxChevronDown, RxPlus } from "react-icons/rx";
-import {ButtonGroup} from "@/components/ui/button-group";
+import * as UI from "@/lib/ui";
 
 export default async function CoursesPage() {
   const session = await auth.api.getSession({
@@ -64,13 +61,13 @@ export default async function CoursesPage() {
 
   return (
     <>
-      <div className={mainContainer}>
+      <div className={UI.mainContainer}>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className={textH1Style}>
-              Welcome, <span className={textGradientTheme}>{session.user.name || "User"}</span>!
+            <h1 className={UI.textH1Style}>
+              Welcome, <span className={UI.textGradientTheme}>{session.user.name || "User"}</span>!
             </h1>
-            <p className={`mt-2 ${textDescription}`}>Explore the marketplace, learn new skills, or teach your own courses.</p>
+            <p className={`mt-2 ${UI.textDescription}`}>Explore the marketplace, learn new skills, or teach your own courses.</p>
           </div>
         </div>
 
@@ -82,18 +79,11 @@ export default async function CoursesPage() {
           sectionNoneFoundExplanation={"You are not enrolled in any courses yet."}
           displayCompletionStatus={true}
           button={
-            <ButtonGroup>
-              <Button variant={"outline"} asChild className={"py-6 w-10 text-lg"}>
-                <a href={"#marketplace"}>
-                  <RxChevronDown/>
-                </a>
-              </Button>
-              <Button variant={"outline"} asChild className={"py-6 w-40 text-lg"} >
-                <a href={"#marketplace"}>
-                  Add Course
-                </a>
-              </Button>
-            </ButtonGroup>
+            <a href={"#marketplace"}>
+              <button className={`${UI.buttonBaseStyling} ${UI.buttonGrey}`}>
+                Add Course
+              </button>
+            </a>
           }
         />
 
@@ -104,18 +94,11 @@ export default async function CoursesPage() {
           sectionTitle={"Courses You Teach"}
           sectionNoneFoundExplanation={"You have not created any courses yet."}
           button={
-            <ButtonGroup>
-              <Button asChild className={"py-6 w-10 text-lg"}>
-                <Link href={"/courses/new"}>
-                  <RxPlus/>
-                </Link>
-              </Button>
-              <Button asChild className={"py-6 w-40 text-lg"}>
-                <Link href={"/courses/new"}>
-                  Create Course
-                </Link>
-              </Button>
-            </ButtonGroup>
+            <Link href={"/courses/new"}>
+              <button className={`${UI.buttonBaseStyling} ${UI.buttonBlueIndigo}`}>
+                Create Course
+              </button>
+            </Link>
           }
         />
 

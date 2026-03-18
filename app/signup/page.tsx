@@ -2,10 +2,9 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
-
 import CreateSignUpForm from "@/components/CreateSignUpForm";
 import { auth } from "@/lib/auth";
+import {textGradientTheme, textH1Style, textLinkBack} from "@/lib/ui";
 
 
 export default async function Login() {
@@ -19,17 +18,16 @@ export default async function Login() {
     return (
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-10">
         <div className="flex items-center justify-between">
-          <h1 className={"text-2xl font-bold"}>Sign Up</h1>
-          <Button asChild variant="ghost">
-            <Link href={"/"}>Back</Link>
-          </Button>
+          <h1 className={textH1Style}>Sign Up</h1>
+            <Link href={"/"} className={textLinkBack}>
+              Back
+            </Link>
         </div>
 
         <section className="rounded-lg border bg-card p-6">
           <CreateSignUpForm/>
-          <p className={"text-sm"}>
-            {/* TODO: Link colour is not working*/}
-            Have an account? <Link href={"/login"} className={"accent-blue-500 font-bold"}>Login</Link> instead.
+          <p className={"text-sm mt-2"}>
+            Have an account? <Link href={"/login"} className={`${textGradientTheme} text-sm transition duration-250 ease-in-out border-b border-b-transparent hover:border-b-blue-500 font-semibold`}>Login</Link> instead.
           </p>
         </section>
       </main>
