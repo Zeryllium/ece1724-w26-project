@@ -27,6 +27,9 @@ The Better Auth secret can be generated through https://better-auth.com/docs/ins
 openssl rand -base64 32
 ```
 
+For quiz analytics, create a Veracity Learning account here: https://lrs.io/ui/users/home/0/
+Create a new LRS with any name, then within that LRS, naivgate to Management -> Access Keys and create a new access key, which will give the configuration variables above.
+
 ## 2. Database Initialization
 
 We use Prisma as our ORM. If this is a fresh pull, you must generate the client and push the schema to your database.
