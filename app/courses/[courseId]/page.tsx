@@ -10,7 +10,8 @@ import RoleSetter from "@/components/RoleSetter";
 import * as UI from "@/lib/ui";
 import {RxCardStack, RxCardStackPlus, RxCheck, RxChevronLeft, RxLink1, RxLockClosed} from "react-icons/rx";
 import CourseEditorWrapper from "@/components/CourseEditorWrapper";
-import {lineBreak, sectionFlex} from "@/lib/ui";
+import {buttonBaseStyling, buttonGrey, lineBreak, sectionFlex} from "@/lib/ui";
+import DeleteCourseButton from "@/components/DeleteCourseButton";
 
 
 export default async function CourseDetailPage(props: { params: Promise<{ courseId: string }> }) {
@@ -68,13 +69,14 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
           
           <div className="relative z-10 shrink-0">
              {_isManaging ? (
-               <CourseEditorWrapper
-                 isManaging={_isManaging}
-                 courseId={course.courseId}
-                 courseName={course.courseName}
-                 initialName={course.courseName}
-                 initialDescription={course.courseDescription || ""}
-               />
+               <div className={"flex flex-col gap-2"}>
+                 <Link href={`/courses/${course.courseId}/edit/`}>
+                   <button className={`${buttonBaseStyling} ${buttonGrey}`}>
+                     Edit Course
+                   </button>
+                 </Link>
+                 <DeleteCourseButton courseId={courseId} courseName={course.courseName} />
+               </div>
              ) : !_isEnrolled ? (
                <EnrollButton courseId={course.courseId} />
              ) : (

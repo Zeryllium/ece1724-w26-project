@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import {buttonBlueIndigo} from "@/lib/ui";
 
 export default function CreateCourseForm() {
   const [courseName, setCourseName] = useState("");
@@ -43,7 +44,7 @@ export default function CreateCourseForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="border p-6 rounded-lg shadow-sm space-y-4 max-w-xl">
+    <form onSubmit={handleSubmit} className="p-6 space-y-4">
       <h2 className="text-xl font-semibold">Create a New Course</h2>
       {error && <div className="text-red-500 text-sm">{error}</div>}
       
@@ -76,9 +77,9 @@ export default function CreateCourseForm() {
         />
       </div>
 
-      <Button type="submit" disabled={loading} className="w-full">
+      <button type="submit" disabled={loading} className={buttonBlueIndigo + " w-full " + (loading ? "opacity-50" : "")}>
         {loading ? "Creating..." : "Create Course"}
-      </Button>
+      </button>
     </form>
   );
 }

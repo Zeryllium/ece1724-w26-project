@@ -6,7 +6,17 @@ import { prisma } from "@/lib/prisma";
 import ModuleEditorWrapper from "@/components/ModuleEditorWrapper";
 import QuizTaker from "@/components/QuizTaker";
 import InstructorLrsDashboard from "@/components/InstructorLrsDashboard";
-import {mainContainer, textH1Style, textDescription, buttonBlueIndigo, badgeModuleQuiz, badgeModuleLecture, badgeModuleAssignment, textH2Style} from "@/lib/ui";
+import {
+  mainContainer,
+  textH1Style,
+  textDescription,
+  buttonBlueIndigo,
+  badgeModuleQuiz,
+  badgeModuleLecture,
+  badgeModuleAssignment,
+  textH2Style,
+  textLinkBack
+} from "@/lib/ui";
 
 export default async function ModulePage(props: { params: Promise<{ courseId: string; moduleIndex: string }> }) {
   const { courseId, moduleIndex } = await props.params;
@@ -73,7 +83,7 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
 
   const headerLeft = (
     <div>
-      <Link href={`/courses/${courseId}`} className="text-sm text-blue-600 hover:underline mb-4 inline-block">
+      <Link href={`/courses/${courseId}`} className={`${textLinkBack} mb-2 inline-block`}>
         &larr; Back to {moduleData.course.courseName}
       </Link>
       

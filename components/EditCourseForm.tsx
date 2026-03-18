@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import {buttonBlueIndigo, buttonGrey} from "@/lib/ui";
 
 export default function EditCourseForm({
     courseId,
@@ -13,12 +14,13 @@ export default function EditCourseForm({
     courseId: string,
     initialName: string,
     initialDescription: string,
-    onCancel: () => void
+    onCancel?: () => void
 }) {
     const [courseName, setCourseName] = useState(initialName);
     const [courseDescription, setCourseDescription] = useState(initialDescription);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const router = useRouter();
 
     async function handleSubmit(e: React.FormEvent) {
@@ -40,9 +42,14 @@ export default function EditCourseForm({
             const updatedCourse = await res.json();
             console.log("Updated course:", updatedCourse);
             router.push(`/courses/${courseId}`);
-            
+
+            setSuccess("Changes saved successfully!");
             router.refresh();
-            onCancel();
+
+            setTimeout(() => {
+                if (onCancel) onCancel();
+            }, 1000);
+
         } catch (err) {
             setError("Error updating course");
             setLoading(false);
@@ -50,7 +57,7 @@ export default function EditCourseForm({
     }
 
     return (
-        <form onSubmit={handleSubmit} className="border p-6 rounded-lg shadow-sm space-y-4 max-w-xl">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
             <h2 className="text-xl font-semibold">Edit Course</h2>
             {error && <div className="text-red-500 text-sm">{error}</div>}
             
@@ -82,19 +89,14 @@ export default function EditCourseForm({
             </div>
             
             <div className="flex gap-2">
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                >
+                {success && <span className="text-green-600 text-sm font-semibold flex-1">{success}</span>}
+                {!success && onCancel && (
+                  <button type="button" onClick={onCancel} disabled={loading} className={buttonGrey}>
+                      Cancel
+                  </button>
+                )}
+                <button type="submit" disabled={loading} className={buttonBlueIndigo + (loading ? " opacity-50" : "")}>
                     {loading ? "Saving..." : "Save Changes"}
-                </button>
-                <button
-                    type="button"
-                    onClick={onCancel}
-                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                >
-                    Cancel
                 </button>
             </div>
         </form>
