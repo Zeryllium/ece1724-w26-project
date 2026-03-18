@@ -15,6 +15,11 @@ npm install
 # NEXT_PUBLIC_API_BASE_URL=""
 # BETTER_AUTH_SECRET=
 # BETTER_AUTH_URL=
+
+# Veracity LRS Configuration for Quiz Analytics
+# LRS_ENDPOINT=""
+# LRS_KEY=""
+# LRS_SECRET=""
 ```
 
 The Better Auth secret can be generated through https://better-auth.com/docs/installation or using the following:
