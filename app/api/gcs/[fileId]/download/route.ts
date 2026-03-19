@@ -4,7 +4,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3Client } from "@/lib/s3-client";
 import { prisma } from "@/lib/prisma";
 import {headers} from "next/headers";
-import {auth} from "@/lib/auth";
+import {auth, ROLES} from "@/lib/auth";
 
 export async function GET(
   req: NextRequest,
@@ -15,17 +15,64 @@ export async function GET(
     headers: reqHeaders,
   });
 
+  const {fileId} = await params
+
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
   try {
     const file = await prisma.file.findUnique({
-      where: { id: params.fileId },
+      where: {
+        id: fileId
+      },
+      include: {
+        module: true,
+        submission: true
+      }
     });
 
     if (!file) {
       return NextResponse.json({ error: "File not found" }, { status: 404 });
+    }
+
+    // We need to locate the CourseId
+    // File either has a Module relationship or a Submission relationship
+    // Submission has a relationship with Module
+    // Check File->Module->Course first and then fallback on File->Submission->Module->Course
+
+    let targetCourseId = file.module?.courseId;
+    if (!targetCourseId && file.submission) {
+      const submissionModule = await prisma.module.findUnique({
+        where: {
+          moduleId: file.submission.moduleId
+        }
+      });
+      targetCourseId = submissionModule?.courseId;
+    }
+
+    if (!targetCourseId) {
+      return NextResponse.json({ error: "Malformed Course ID" }, { status: 409 })
+    }
+
+    const enrollment = await prisma.enrollment.findUnique({
+      where: {
+        studentId_courseId: {
+          studentId: session.user.id,
+          courseId: targetCourseId
+        }
+      }
+    })
+    const management = await prisma.managing.findUnique({
+      where: {
+        instructorId_courseId: {
+          instructorId: session.user.id,
+          courseId: targetCourseId
+        }
+      }
+    })
+
+    if (!enrollment && !management && session.user.role !== ROLES.ADMIN) {
+      return NextResponse.json( {error: "You are not enrolled in this course"}, { status: 403 } )
     }
 
     const command = new GetObjectCommand({
@@ -35,6 +82,8 @@ export async function GET(
     });
 
     const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 60 });
+
+    console.log(signedUrl)
 
     return NextResponse.redirect(signedUrl);
   } catch (error) {

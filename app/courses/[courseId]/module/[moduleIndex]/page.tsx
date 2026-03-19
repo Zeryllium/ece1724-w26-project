@@ -27,7 +27,11 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
     where: { courseId, moduleIndex: index },
     include: {
       course: true,
-      moduleResources: true
+      moduleResources: {
+        orderBy: {
+          createdAt: "desc"
+        }
+      }
     }
   });
 
@@ -152,7 +156,7 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
                   </div>
                   {moduleData.moduleResources && moduleData.moduleResources.length > 0 && (
                      <a
-                       href={moduleData.moduleResources[0].s3Path}
+                       href={`/api/gcs/${moduleData.moduleResources.at(0)!.id}/download`}
                        target="_blank"
                        rel="noreferrer"
                        className={UI.buttonBlueIndigo + " text-sm shrink-0 whitespace-nowrap text-center"}

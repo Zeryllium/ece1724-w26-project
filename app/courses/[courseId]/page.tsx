@@ -35,7 +35,11 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
         modules: {
           orderBy: {moduleIndex: 'asc'},
           include: {
-            moduleResources: true
+            moduleResources: {
+              orderBy: {
+                createdAt: "desc"
+              }
+            }
           }
         }
       }
@@ -134,7 +138,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
                       {mod.moduleType !== "QUIZ" && mod.moduleResources.length > 0 ? (
                         _isManaging || _isEnrolled ? (
                           <a
-                            href={mod.moduleResources[0].s3Path}
+                            href={`/api/gcs/${mod.moduleResources.at(0)!.id}/download`}
                             target="_blank"
                             rel="noreferrer"
                             className={`${UI.cardTextURI} inline-flex items-center gap-1 mt-2`}

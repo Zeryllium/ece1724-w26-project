@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
 
     const signedUrl = await getSignedUrl(s3Client, command, {expiresIn:300});
 
-    const fileTransaction = await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       let newFile = null
       if (uploadType === "MODULE") {
         newFile = await tx.file.create({
