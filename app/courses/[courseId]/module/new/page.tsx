@@ -3,6 +3,7 @@ import {auth, isManaging, ROLES} from "@/lib/auth";
 import {headers} from "next/headers";
 import {forbidden, redirect} from "next/navigation";
 import * as UI from "@/lib/ui";
+import Link from "next/link";
 
 export default async function NewModulePage(props: { params: Promise<{ courseId: string }> }) {
   const {courseId} = await props.params;
@@ -24,6 +25,9 @@ export default async function NewModulePage(props: { params: Promise<{ courseId:
 
   return (
     <div className={UI.mainContainer}>
+      <Link href={`/courses/${courseId}`} className={`${UI.textLinkBack} mb-2 inline-block`}>
+        &larr; Back to course
+      </Link>
       <h1 className={UI.textH1Style}>
         Create a new module
       </h1>

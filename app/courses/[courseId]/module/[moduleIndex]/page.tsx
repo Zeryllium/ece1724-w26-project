@@ -3,23 +3,12 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import {auth, isManaging, isEnrolled, ROLES} from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import ModuleEditorWrapper from "@/components/ModuleEditorWrapper";
 import QuizTaker from "@/components/QuizTaker";
 import AssignmentTaker from "@/components/AssignmentTaker";
 import InstructorAssignmentGrader from "@/components/InstructorAssignmentGrader";
 import InstructorLrsDashboard from "@/components/InstructorLrsDashboard";
 import RoleSetter from "@/components/RoleSetter";
-import {
-  mainContainer,
-  textH1Style,
-  textDescription,
-  buttonBlueIndigo,
-  badgeModuleQuiz,
-  badgeModuleLecture,
-  badgeModuleAssignment,
-  textH2Style,
-  textLinkBack
-} from "@/lib/ui";
+import * as UI from "@/lib/ui";
 
 export default async function ModulePage(props: { params: Promise<{ courseId: string; moduleIndex: string }> }) {
   const { courseId, moduleIndex } = await props.params;
@@ -110,13 +99,13 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
 
   const headerLeft = (
     <div>
-      <Link href={`/courses/${courseId}`} className={`${textLinkBack} mb-2 inline-block`}>
+      <Link href={`/courses/${courseId}`} className={`${UI.textLinkBack} mb-2 inline-block`}>
         &larr; Back to {moduleData.course.courseName}
       </Link>
       
-      <h1 className={textH1Style}>Module {moduleData.moduleIndex}: {moduleData.moduleTitle}</h1>
+      <h1 className={UI.textH1Style}>Module {moduleData.moduleIndex}: {moduleData.moduleTitle}</h1>
       <div className="flex gap-2 mt-3">
-          <span className={moduleData.moduleType === 'QUIZ' ? badgeModuleQuiz : moduleData.moduleType === 'LECTURE' ? badgeModuleLecture : badgeModuleAssignment}>
+          <span className={moduleData.moduleType === 'QUIZ' ? UI.badgeModuleQuiz : moduleData.moduleType === 'LECTURE' ? UI.badgeModuleLecture : UI.badgeModuleAssignment}>
              {moduleData.moduleType}
           </span>
       </div>
@@ -126,7 +115,7 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
   const pageContent = (
     <>
       <div className="bg-white p-6 border rounded-xl shadow-sm mb-6">
-         <p className={textDescription + " whitespace-pre-line"}>
+         <p className={UI.textDescription + " whitespace-pre-line"}>
            {moduleData.moduleDescription || "No description provided."}
          </p>
          
@@ -145,7 +134,7 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
                 href={moduleData.moduleResources[0].s3Path}
                 target="_blank"
                 rel="noreferrer"
-                className={buttonBlueIndigo + " inline-block"}
+                className={UI.buttonBlueIndigo + " inline-block"}
              >
                 Open Resource
              </a>
@@ -166,7 +155,7 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
                        href={moduleData.moduleResources[0].s3Path}
                        target="_blank"
                        rel="noreferrer"
-                       className={buttonBlueIndigo + " text-sm shrink-0 whitespace-nowrap text-center"}
+                       className={UI.buttonBlueIndigo + " text-sm shrink-0 whitespace-nowrap text-center"}
                      >
                         Download PDF
                      </a>
@@ -202,7 +191,7 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
 
       {moduleData.moduleType === "QUIZ" && canEdit && metrics && (
         <div className="bg-white p-8 border rounded-xl shadow-sm mt-8">
-          <h2 className={textH2Style + " mb-6"}>Quiz Performance Metrics</h2>
+          <h2 className={UI.textH2Style + " mb-6"}>Quiz Performance Metrics</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
              <div className="border border-slate-100 rounded-lg p-6 bg-slate-50 text-center shadow-sm">
                 <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Total Submissions</p>
@@ -239,24 +228,20 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
   return (
     <>
     <RoleSetter role={canEdit ? "INSTRUCTOR" : "STUDENT"} />
-    <div className={mainContainer}>
-      {canEdit ? (
-        <ModuleEditorWrapper 
-          courseId={courseId} 
-          moduleIndex={index} 
-          initialData={moduleData} 
-          headerLeft={headerLeft}
-        >
-          {pageContent}
-        </ModuleEditorWrapper>
-      ) : (
-        <>
-          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-6">
-            {headerLeft}
-          </div>
-          {pageContent}
-        </>
-      )}
+    <div className={UI.mainContainer}>
+      <>
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-6">
+          {headerLeft}
+          {canEdit && (
+            <Link href={`/courses/${courseId}/module/${moduleIndex}/edit`} >
+              <button className={UI.buttonGrey}>
+                Edit Module Settings
+              </button>
+            </Link>
+          )}
+        </div>
+        {pageContent}
+      </>
     </div>
     </>
   );

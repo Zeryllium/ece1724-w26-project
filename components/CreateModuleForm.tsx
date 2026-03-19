@@ -10,8 +10,7 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
   const [moduleTitle, setModuleTitle] = useState("");
   const [moduleDescription, setModuleDescription] = useState("");
   const [moduleType, setModuleType] = useState("LECTURE");
-  const [moduleResourceUri, setModuleResourceUri] = useState("");
-  
+
   // initialize quiz state
   const [quizConfig, setQuizConfig] = useState<QuizConfig>({
     timeLimit: 15,
@@ -39,38 +38,10 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
     setError("");
 
     try {
-      let finalResourceUri = moduleResourceUri;
-
-      // Handle PDF Upload first if it's an assignment
-      if (moduleType === "ASSIGNMENT") {
-        if (!assignmentFile) {
-          throw new Error("Please select a PDF file for the assignment.");
-        }
-        if (!assignmentConfig.dueDate) {
-          throw new Error("Please set a due date for the assignment.");
-        }
-        const formData = new FormData();
-        formData.append("file", assignmentFile);
-        
-        const uploadRes = await fetch("/api/upload", {
-          method: "POST",
-          body: formData
-        });
-        
-        if (!uploadRes.ok) {
-           const errData = await uploadRes.json();
-           throw new Error(errData.error || "Failed to upload PDF");
-        }
-        
-        const uploadData = await uploadRes.json();
-        finalResourceUri = uploadData.url;
-      }
-
       const payload: any = {
         moduleTitle, 
         moduleDescription, 
         moduleType, 
-        moduleResourceUri: moduleType === "QUIZ" ? "" : finalResourceUri 
       };
 
       if (moduleType === "QUIZ") {
@@ -92,18 +63,53 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
         throw new Error(data.error || "Failed to create module");
       }
 
+      if (moduleType === "ASSIGNMENT") {
+        if (!assignmentFile) {
+          throw new Error("Please select a PDF file for the assignment.");
+        }
+        if (!assignmentConfig.dueDate) {
+          throw new Error("Please set a due date for the assignment.");
+        }
+        const formData = new FormData();
+        const moduleCreationTxnData = await res.json()
+        formData.append("file", assignmentFile);
+        formData.append("uploadType", "MODULE")
+        formData.append("moduleId", moduleCreationTxnData.moduleId)
+
+        const signUploadRes = await fetch("/api/gcs/upload", {
+          method: "POST",
+          body: formData
+        });
+
+        const uploadData = await signUploadRes.json();
+        if (!signUploadRes.ok) {
+          throw new Error(uploadData.error || "Failed to upload PDF");
+        }
+
+        const uploadRes = await fetch(uploadData.signedUrl, {
+          method: "PUT",
+          body: assignmentFile,
+          headers: {
+            "Content-Type": assignmentFile.type
+          }
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error((await uploadRes.json()).error || "Failed to upload PDF to GCS")
+        }
+      }
+
       // clear everything out
       setModuleTitle("");
       setModuleDescription("");
       setModuleType("LECTURE");
-      setModuleResourceUri("");
       setQuizConfig({
         timeLimit: 15,
         maxAttempts: 1,
         dueDate: "",
         questions: []
       });
-      setAssignmentConfig({ 
+      setAssignmentConfig({
         dueDate: "",
         aiGradingEnabled: false,
         aiRubric: "",
@@ -201,23 +207,6 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
           <option value="QUIZ">Quiz</option>
         </select>
       </div>
-
-      {moduleType === "LECTURE" && (
-        <div className="space-y-2">
-          <label htmlFor="moduleResourceUri" className="block text-sm font-medium">
-            Resource URL <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="moduleResourceUri"
-            type="url"
-            value={moduleResourceUri}
-            onChange={(e) => setModuleResourceUri(e.target.value)}
-            required
-            className="w-full border rounded-md px-3 py-2 text-black"
-            placeholder="https://example.com/video.mp4"
-          />
-        </div>
-      )}
 
       {moduleType === "ASSIGNMENT" && (
         <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-4">

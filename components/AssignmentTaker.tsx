@@ -49,20 +49,38 @@ export default function AssignmentTaker({
       // Upload the PDF
       const formData = new FormData();
       formData.append("file", file);
-      
-      const uploadRes = await fetch("/api/upload", {
+      formData.append("uploadType", "SUBMISSION")
+      formData.append("moduleId", moduleId)
+
+      const signUploadRes = await fetch("/api/gcs/upload", {
         method: "POST",
         body: formData
       });
-      
-      if (!uploadRes.ok) {
-         const errData = await uploadRes.json();
-         throw new Error(errData.error || "Failed to upload PDF");
-      }
-      
-      const uploadData = await uploadRes.json();
-      const fileUrl = uploadData.url;
 
+      const uploadData = await signUploadRes.json();
+      if (!signUploadRes.ok) {
+        throw new Error(uploadData.error || "Failed to upload PDF");
+      }
+
+      const uploadRes = await fetch(uploadData.signedUrl, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": file.type
+        }
+      });
+
+      if (!uploadRes.ok) {
+        throw new Error((await uploadRes.json()).error || "Failed to upload PDF to GCS")
+      }
+
+      // TODO:
+      /*
+        ******************************* IMPORTANT *******************************
+        * Signed links expire after a short duration (5 minutes). You must rebuild
+        * your links each time you want to access these files by going through the
+        * routes. Store the fileId instead and query using that.
+       */
       // Submit the assignment record
       const res = await fetch(`/api/courses/${courseId}/modules/${moduleIndex}/submit`, {
         method: "POST",
@@ -70,7 +88,7 @@ export default function AssignmentTaker({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ 
-           assignmentFileUrl: fileUrl
+           assignmentFileUrl: uploadData.fileId  // This cannot be a signed URL
         }),
       });
 

@@ -20,7 +20,6 @@ export default function EditModuleForm({
   const [moduleTitle, setModuleTitle] = useState(initialData.moduleTitle || "");
   const [moduleDescription, setModuleDescription] = useState(initialData.moduleDescription || "");
   const [moduleType, setModuleType] = useState(initialData.moduleType || "LECTURE");
-  const [moduleResourceUri, setModuleResourceUri] = useState(initialData.moduleResourceUri || "");
   
   // quiz state defaults
   const defaultQuizConfig: QuizConfig = {
@@ -54,40 +53,10 @@ export default function EditModuleForm({
     setError("");
 
     try {
-      let finalResourceUri = moduleResourceUri;
-
-      // Handle PDF Upload first if it's an assignment and a new file was chosen
-      if (moduleType === "ASSIGNMENT") {
-        if (!assignmentConfig.dueDate) {
-          throw new Error("Please set a due date for the assignment.");
-        }
-        
-        if (assignmentFile) {
-          const formData = new FormData();
-          formData.append("file", assignmentFile);
-          
-          const uploadRes = await fetch("/api/upload", {
-            method: "POST",
-            body: formData
-          });
-          
-          if (!uploadRes.ok) {
-             const errData = await uploadRes.json();
-             throw new Error(errData.error || "Failed to upload PDF");
-          }
-          
-          const uploadData = await uploadRes.json();
-          finalResourceUri = uploadData.url;
-        } else if (!finalResourceUri) {
-          throw new Error("No PDF file found for the assignment.");
-        }
-      }
-
       const payload: any = {
         moduleTitle, 
         moduleDescription, 
         moduleType, 
-        moduleResourceUri: moduleType === "QUIZ" ? "" : finalResourceUri 
       };
 
       if (moduleType === "QUIZ") {
@@ -107,6 +76,36 @@ export default function EditModuleForm({
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || "Failed to update module");
+      }
+
+      if (moduleType === "ASSIGNMENT" && assignmentFile) {
+        const formData = new FormData();
+        const moduleCreationTxnData = await res.json()
+        formData.append("file", assignmentFile);
+        formData.append("uploadType", "MODULE")
+        formData.append("moduleId", moduleCreationTxnData.moduleId)
+
+        const signUploadRes = await fetch("/api/gcs/upload", {
+          method: "POST",
+          body: formData
+        });
+
+        const uploadData = await signUploadRes.json();
+        if (!signUploadRes.ok) {
+          throw new Error(uploadData.error || "Failed to upload PDF");
+        }
+
+        const uploadRes = await fetch(uploadData.signedUrl, {
+          method: "PUT",
+          body: assignmentFile,
+          headers: {
+            "Content-Type": assignmentFile.type
+          }
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error((await uploadRes.json()).error || "Failed to upload PDF to GCS")
+        }
       }
 
       setSuccess("Changes saved successfully!");
@@ -169,7 +168,7 @@ export default function EditModuleForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="border p-6 rounded-lg shadow-sm space-y-4 w-full bg-white">
+    <form onSubmit={handleSubmit} className="p-6 space-y-4">
       <h2 className="text-xl font-semibold">Edit Module Details</h2>
       {error && <div className="text-red-500 text-sm">{error}</div>}
       
@@ -203,32 +202,11 @@ export default function EditModuleForm({
         </select>
       </div>
 
-      {moduleType === "LECTURE" && (
-        <div className="space-y-2">
-          <label htmlFor="moduleResourceUri" className="block text-sm font-medium">
-            Resource URL <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="moduleResourceUri"
-            type="url"
-            value={moduleResourceUri}
-            onChange={(e) => setModuleResourceUri(e.target.value)}
-            required
-            className="w-full border rounded-md px-3 py-2 text-black"
-          />
-        </div>
-      )}
-
       {moduleType === "ASSIGNMENT" && (
         <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-4">
-           {moduleResourceUri && (
-              <div className="text-sm border p-3 rounded bg-white text-slate-600 mb-2">
-                Current PDF: <a href={moduleResourceUri} target="_blank" className="text-blue-600 hover:underline">View Uploaded Assignment</a>
-              </div>
-           )}
            <div className="space-y-2">
               <label className="block text-sm font-medium">
-                 {moduleResourceUri ? "Replace Assignment PDF" : "Assignment PDF"} {!moduleResourceUri && <span className="text-red-500">*</span>}
+                { initialData.moduleResources ? `Replace Assignment PDF ${initialData.moduleResources.at(0).originalName}` : "Assignment PDF"}
               </label>
               <div className="relative mt-2">
               <input 
@@ -237,7 +215,6 @@ export default function EditModuleForm({
                 id="instructor-edit-file-upload"
                 className="hidden"
                 onChange={(e) => setAssignmentFile(e.target.files?.[0] || null)}
-                {...(!moduleResourceUri ? { required: true } : {})}
               />
               <label 
                 htmlFor="instructor-edit-file-upload" 

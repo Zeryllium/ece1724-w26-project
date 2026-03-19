@@ -32,10 +32,6 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
     if (!moduleType || !["LECTURE", "ASSIGNMENT", "QUIZ"].includes(moduleType)) {
       return NextResponse.json({ error: "moduleType must be LECTURE, ASSIGNMENT, or QUIZ" }, { status: 400 });
     }
-    // We bypass the resource uri check if the module is a quiz!
-    if (moduleType !== "QUIZ" && (!moduleResourceUri || typeof moduleResourceUri !== "string" || moduleResourceUri.trim() === "")) {
-      return NextResponse.json({ error: "moduleResourceUri is required for non-quiz modules" }, { status: 400 });
-    }
 
     let validQuizConfig = null;
     if (moduleType === "QUIZ") {

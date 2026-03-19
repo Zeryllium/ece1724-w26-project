@@ -4,6 +4,7 @@ import {headers} from "next/headers";
 import {forbidden, notFound, redirect} from "next/navigation";
 import * as UI from "@/lib/ui";
 import { prisma } from "@/lib/prisma";
+import Link from "next/link";
 
 export default async function ModuleEditPage(props: { params: Promise<{ courseId: string, moduleIndex: string }> }) {
   const {courseId, moduleIndex} = await props.params;
@@ -29,7 +30,15 @@ export default async function ModuleEditPage(props: { params: Promise<{ courseId
   try {
     courseModule = await prisma.module.findFirstOrThrow({
       where: { courseId, moduleIndex: index },
-      include: { course: true }
+      include:
+        {
+          course: true,
+          moduleResources: {
+            orderBy: {
+              createdAt: "desc"
+            }
+          }
+        }
     });
   } catch {
     notFound();
@@ -37,6 +46,9 @@ export default async function ModuleEditPage(props: { params: Promise<{ courseId
 
   return (
     <div className={UI.mainContainer}>
+      <Link href={`/courses/${courseId}/module/${moduleIndex}`} className={`${UI.textLinkBack} mb-2 inline-block`}>
+        &larr; Back to module
+      </Link>
       <h1 className={UI.textH1Style}>
         Editing Module {moduleIndex}
       </h1>

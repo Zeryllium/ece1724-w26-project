@@ -69,6 +69,7 @@ export async function POST(req: NextRequest) {
       if (uploadType === "MODULE") {
         newFile = await tx.file.create({
           data: {
+            id: fileId,
             s3Path: key,
             originalName: file.name,
             mimeType: file.type || "application/octet-stream",
@@ -99,6 +100,7 @@ export async function POST(req: NextRequest) {
 
         newFile = await tx.file.create({
           data: {
+            id: fileId,
             s3Path: key,
             originalName: file.name,
             mimeType: file.type || "application/octet-stream",
@@ -111,7 +113,9 @@ export async function POST(req: NextRequest) {
       return newFile;
     })
 
-    console.log(fileTransaction.id)
+    console.log(key)
+    console.log(fileId)
+    console.log(signedUrl)
 
     return NextResponse.json({ signedUrl, key, fileId });
   } catch (error) {

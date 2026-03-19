@@ -16,7 +16,14 @@ export default async function EditModuleModal(
   try {
     courseModule = await prisma.module.findFirstOrThrow({
       where: { courseId:params.courseId, moduleIndex: index },
-      include: { course: true }
+      include: {
+        course: true,
+        moduleResources: {
+          orderBy: {
+            createdAt: "desc"
+          }
+        }
+      }
     });
   } catch {
     notFound();
