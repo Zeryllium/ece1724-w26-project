@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { RxChevronLeft, RxChevronRight } from "react-icons/rx";
 
@@ -12,7 +12,12 @@ interface CalendarEvent {
 }
 
 export default function CourseCalendar({ courseId, modules }: { courseId: string, modules: any[] }) {
+  const [mounted, setMounted] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const events: CalendarEvent[] = [];
   modules.forEach(mod => {
@@ -61,6 +66,14 @@ export default function CourseCalendar({ courseId, modules }: { courseId: string
     const today = new Date();
     return today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
   };
+
+  if (!mounted) {
+    return (
+       <div className="bg-white border rounded-xl shadow-sm p-6 w-full mt-12 min-h-[400px] animate-pulse flex items-center justify-center">
+          <span className="text-slate-400 font-medium">Loading Course Schedule...</span>
+       </div>
+    );
+  }
 
   return (
     <div className="bg-white border rounded-xl shadow-sm p-6 w-full mt-12">
