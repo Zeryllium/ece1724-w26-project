@@ -37,9 +37,6 @@ openssl rand -base64 32
 For quiz analytics, create a Veracity Learning account here: https://lrs.io/ui/users/home/0/
 Create a new LRS with any name, then within that LRS, naivgate to Management -> Access Keys and create a new access key, which will give the configuration variables above.
 
-For quiz analytics, create a Veracity Learning account here: https://lrs.io/ui/users/home/0/
-Create a new LRS with any name, then within that LRS, naivgate to Management -> Access Keys and create a new access key, which will give the configuration variables above.
-
 For Google Calendar Sync features, you must enable the Calendar API via Google Cloud Console, configure your OAuth Consent Screen with the `https://www.googleapis.com/auth/calendar.events` scope, and provision an OAuth Client ID explicitly bound to `http://localhost:3000/api/auth/callback/google` to test synchronization functionality locally.
 
 ## 2. Database Initialization
@@ -54,7 +51,35 @@ npx prisma generate
 npx prisma db push
 ```
 
-## 3. Running the API Unit Tests (Vitest)
+## 3. Setting up Google Cloud Storage (GCS)
+1. Create a Google Cloud account if you have not done so already.
+2. Create a GCS bucket in your desired region of choice with default settings. <u><b>TURN OFF PUBLIC ACCESS</b></u>
+3. Download gcloud cli (https://cloud.google.com/cli)
+4. Set up your CORS configuration to be able to access the S3 bucket using the provided `cors-config.json` file:
+    ```shell
+    gcloud storage buckets update gs://BUCKET_NAME --cors-file=CORS_CONFIG_FILE
+    ```
+5. Check to see if your CORS configuration has changed with:
+    ```shell
+    gcloud storage buckets describe gs://BUCKET_NAME --format="json"
+    ```
+6. Go to the `Settings → Interoperability` in the GCS console and create an access key for your account
+7. Add the corresponding secrets to your `.env` file
+    ```
+    # S3 Access Key Credentials (Check the Interoperability tab in GCS)
+    S3_ACCESS_KEY_ID=<google_access_key>
+    S3_ACCESS_KEY_SECRET=<google_access_secret>
+    
+    # Bucket details
+    S3_BUCKET_NAME=<gcs_bucket_name>
+    
+    # The GCS S3-compatible endpoint and other configs
+    S3_ENDPOINT=https://storage.googleapis.com
+    S3_REGION=<google_service_region>
+    S3_FORCE_PATH_STYLE=true
+    ``` 
+
+## 4. Running the API Unit Tests (Vitest)
 
 We use Vitest to mock HTTP requests and test the specific isolated logic of the API endpoints directly (`/api/courses`, etc.). The test suites are now modularized into:
 - `tests/general.api.test.ts`
@@ -72,7 +97,7 @@ npx vitest run tests/student.api.test.ts
 npx vitest
 ```
 
-## 4. Running the Browser UI Tests (Playwright)
+## 5. Running the Browser UI Tests (Playwright)
 
 We use Playwright to simulate a real user opening a Chromium browser, interacting with the Unified Dashboard, and creating or enrolling in courses. The test suites are divided into:
 - `tests/general.spec.ts`
