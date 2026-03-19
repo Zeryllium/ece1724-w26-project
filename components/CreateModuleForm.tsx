@@ -16,6 +16,7 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
   const [quizConfig, setQuizConfig] = useState<QuizConfig>({
     timeLimit: 15,
     maxAttempts: 1,
+    dueDate: "",
     questions: []
   });
 
@@ -99,6 +100,7 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
       setQuizConfig({
         timeLimit: 15,
         maxAttempts: 1,
+        dueDate: "",
         questions: []
       });
       setAssignmentConfig({ 
@@ -332,6 +334,15 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
                   onChange={(e) => setQuizConfig({...quizConfig, maxAttempts: parseInt(e.target.value) || 1 })}
                   className="w-full border rounded-md px-3 py-2 text-black"
                   required
+               />
+            </div>
+            <div className="flex-1 space-y-1">
+               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Due Date (Optional)</label>
+               <input 
+                  type="datetime-local" 
+                  value={quizConfig.dueDate || ""} 
+                  onChange={(e) => setQuizConfig({...quizConfig, dueDate: e.target.value })}
+                  className="w-full border rounded-md px-3 py-2 text-black bg-white"
                />
             </div>
           </div>

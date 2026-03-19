@@ -130,6 +130,15 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
            {moduleData.moduleDescription || "No description provided."}
          </p>
          
+         {moduleData.moduleType === "QUIZ" && moduleData.quizConfig && (moduleData.quizConfig as any).dueDate && (
+            <div className="mt-6 p-4 rounded-lg bg-orange-50 border border-orange-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+               <div>
+                 <h3 className="font-semibold text-orange-900">Quiz Deadline</h3>
+                 <p className="text-sm font-bold text-orange-700 mt-1">{new Date((moduleData.quizConfig as any).dueDate).toLocaleString()}</p>
+               </div>
+            </div>
+         )}
+         
          {moduleData.moduleType === "LECTURE" && moduleData.moduleResources && moduleData.moduleResources.length > 0 ? (
            <div className="mt-8">
              <a 
