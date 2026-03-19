@@ -40,7 +40,7 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ cours
 
     // Sanitize and prepare the update payload
     const body = await request.json();
-    const { moduleTitle, moduleDescription, moduleType, moduleResourceUri, quizConfig } = body;
+    const { moduleTitle, moduleDescription, moduleType, moduleResourceUri, quizConfig, assignmentConfig } = body;
     
     const updateData: any = {};
     if (moduleTitle !== undefined) {
@@ -60,10 +60,17 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ cours
         return NextResponse.json({ error: "moduleResourceUri must be a string" }, { status: 400 });
       }
       const typeToCheck = moduleType ?? targetModule.moduleType;
-      if (typeToCheck !== "QUIZ" && moduleResourceUri.trim() === "") {
-        return NextResponse.json({ error: "moduleResourceUri must be a non-empty string" }, { status: 400 });
+      if (moduleResourceUri.trim() !== "") {
+          updateData.moduleResources = {
+             create: [{
+               s3Path: moduleResourceUri.trim(),
+               originalName: moduleResourceUri.trim().split('-').pop() || 'resource',
+               mimeType: moduleResourceUri.trim().endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream',
+               size: 0,
+               uploaderId: session.user.id
+             }]
+          };
       }
-      updateData.moduleResourceUri = moduleResourceUri.trim();
     }
     if (moduleDescription !== undefined) {
       updateData.moduleDescription = typeof moduleDescription === "string" ? moduleDescription.trim() : "";
@@ -74,6 +81,12 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ cours
           return NextResponse.json({ error: "Invalid quiz configuration payload", details: parsedConfig.error.flatten() }, { status: 400 })
        }
        updateData.quizConfig = JSON.parse(JSON.stringify(parsedConfig.data));
+    }
+    if (assignmentConfig !== undefined) {
+      if (typeof assignmentConfig !== "object" || !assignmentConfig.dueDate) {
+        return NextResponse.json({ error: "Invalid assignment configuration payload" }, { status: 400 });
+      }
+      updateData.assignmentConfig = JSON.parse(JSON.stringify(assignmentConfig));
     }
 
     if (Object.keys(updateData).length === 0) {

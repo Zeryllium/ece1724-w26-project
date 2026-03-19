@@ -10,6 +10,7 @@ export const QuestionSchema = z.object({
 export const QuizConfigSchema = z.object({
   timeLimit: z.number().min(1, "Time limit must be at least 1 minute"),
   maxAttempts: z.number().min(1, "Max attempts must be at least 1"),
+  dueDate: z.string().optional(),
   questions: z.array(QuestionSchema),
 });
 

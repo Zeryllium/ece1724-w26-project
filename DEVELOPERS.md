@@ -20,6 +20,9 @@ npm install
 # LRS_ENDPOINT=""
 # LRS_KEY=""
 # LRS_SECRET=""
+
+# Google GenAI Configuration for Assignment Autograding
+# GEMINI_API_KEY=""
 ```
 
 The Better Auth secret can be generated through https://better-auth.com/docs/installation or using the following:

@@ -36,6 +36,8 @@ export default function QuizTaker({
 
   const attemptsTaken = existingSubmission?.quizState?.attempts || 0;
   const attemptsRemainingInitial = quizConfig.maxAttempts - attemptsTaken;
+  const dueDateParam = quizConfig.dueDate;
+  const isPastDue = dueDateParam ? new Date() > new Date(dueDateParam) : false;
 
   useEffect(() => {
     if (!started || timeLeft <= 0 || submitting || result) return;
@@ -174,10 +176,25 @@ export default function QuizTaker({
     );
   }
 
+  if (isPastDue && !started) {
+    return (
+      <div className="bg-white p-6 border border-red-200 rounded-xl shadow-sm text-center flex flex-col items-center justify-center">
+        <h2 className="text-xl font-bold text-red-600 mb-2">Quiz Deadline Passed</h2>
+        <p className="text-gray-600 mb-4 font-medium">The deadline for this quiz was {new Date(dueDateParam!).toLocaleString()}. You can no longer start new attempts.</p>
+        {existingSubmission && (
+          <p className="font-bold text-slate-800 px-4 py-2 bg-slate-100 rounded-lg">Your Best Grade: {Number(existingSubmission.submissionGrade).toFixed(1)}%</p>
+        )}
+      </div>
+    );
+  }
+
   if (!started) {
     return (
       <div className="bg-white p-6 border rounded-xl shadow-sm text-center space-y-4">
         <h2 className="text-xl font-bold">Ready to take the quiz?</h2>
+        {dueDateParam && (
+           <p className="text-sm font-semibold text-red-600">Due: {new Date(dueDateParam).toLocaleString()}</p>
+        )}
         <div className="flex justify-center gap-6 text-sm text-gray-600">
            <div><span className="font-bold">{quizConfig.questions.length}</span> Questions</div>
            <div><span className="font-bold">{quizConfig.timeLimit}</span> Minutes</div>

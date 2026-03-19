@@ -30,6 +30,10 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
 
     const quizConfig = targetModule.quizConfig as any;
 
+    if (quizConfig?.dueDate && new Date() > new Date(quizConfig.dueDate)) {
+       return NextResponse.json({ error: "The deadline for this quiz has passed." }, { status: 403 });
+    }
+
     // Check existing submission
     const existingSubmission = await prisma.submission.findUnique({
       where: {

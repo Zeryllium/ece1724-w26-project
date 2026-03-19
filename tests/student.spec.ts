@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Student UI Flow Suite', () => {
   test('User can register as a student and enroll in a course organically', async ({ page }) => {
-    // 1. Register a net-new user to act as the student
+    // Register a net-new user to act as the student
     const studentEmail = `student_${Date.now()}@test.com`;
     await page.goto('/signup');
     await page.fill('input[name="name"]', 'Playwright Student');
@@ -17,7 +17,7 @@ test.describe('Student UI Flow Suite', () => {
     // They are a brand new user, so their Enrolled list is blank!
     await expect(page.locator('text="You are not enrolled in any courses yet."')).toBeVisible();
 
-    // 2. But the seeder has an instructor. Let's create a quick course with the instructor first via API?
+    // The seeder has an instructor. Let's create a quick course with the instructor first via API?
     // In a pure UI test, this is tricky. We'll just assert that the 3 generic blocks exist for now, 
     // and that the new student sees the Marketplace properly.
 

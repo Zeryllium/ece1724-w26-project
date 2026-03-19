@@ -133,16 +133,15 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
                       )}
                       {mod.moduleType !== "QUIZ" && mod.moduleResources.length > 0 ? (
                         _isManaging || _isEnrolled ? (
-                          <>{/*TODO */}</>
-                          // <a
-                          //   href={mod.moduleResources}
-                          //   target="_blank"
-                          //   rel="noreferrer"
-                          //   className={`${UI.cardTextURI} inline-flex items-center gap-1 mt-2`}
-                          // >
-                          //   View Attached Resource
-                          //   <RxLink1 />
-                          // </a>
+                          <a
+                            href={mod.moduleResources[0].s3Path}
+                            target="_blank"
+                            rel="noreferrer"
+                            className={`${UI.cardTextURI} inline-flex items-center gap-1 mt-2`}
+                          >
+                            View Attached Resource
+                            <RxLink1 />
+                          </a>
                         ) : (
                           <p className={`${UI.cardTextURILocked} inline-flex items-center gap-1 mt-2`}>
                             <RxLockClosed />

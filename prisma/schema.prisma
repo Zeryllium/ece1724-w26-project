@@ -100,7 +100,8 @@ model Module {
   moduleDescription String
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
-  quizConfig        Json? // Stores: { timeLimit, maxAttempts, questions: [{ id, text, options: [], correctOptionIndex }] }
+  quizConfig        Json?      // Stores: { timeLimit, maxAttempts, questions: [{ id, text, options: [], correctOptionIndex }] }
+  assignmentConfig  Json?      // Stores: { dueDate: string }
 
   course          Course       @relation("CourseToModule", fields: [courseId], references: [courseId])
   moduleResources File[]       @relation("ModuleFiles")
@@ -135,7 +136,8 @@ model Submission {
   submissionStatus SubmissionStatus
   submissionGrade  Decimal
   submissionType   SubmissionType   @default(FILE) // Migration required a default value
-  quizState        Json? // Stores: { attempts: number, answers: Record<string, number>, timeSpent: number }
+  quizState        Json?            // Stores: { attempts: number, answers: Record<string, number>, timeSpent: number }
+  assignmentState  Json?            // Stores: { fileUrl: string, submittedAt: string }
 
   student User   @relation(fields: [studentId], references: [id])
   module  Module @relation(fields: [moduleId], references: [moduleId])
