@@ -33,8 +33,7 @@ export default function CreateCourseForm() {
 
       const newCourse = await res.json();
       
-      router.push(`/courses/${newCourse.courseId}`);
-      router.refresh();
+      window.location.href = `/courses/${newCourse.courseId}`;
 
     } catch (err: any) {
       setError(err.message);
@@ -77,7 +76,7 @@ export default function CreateCourseForm() {
         />
       </div>
 
-      <button type="submit" disabled={loading} className={buttonBlueIndigo + " w-full " + (loading ? "opacity-50" : "")}>
+      <button id="submit-course-btn" type="submit" disabled={loading} className={buttonBlueIndigo + " w-full " + (loading ? "opacity-50" : "")}>
         {loading ? "Creating..." : "Create Course"}
       </button>
     </form>

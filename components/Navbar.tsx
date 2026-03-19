@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
 
 export default function Navbar({ role }: { role?: string | null }) {
-  const {user, currentRole} = useUser();
-  const {name, email, image} = user;
-  
+  const { user, currentRole } = useUser();
+  const { name, email, image } = user;
+
   const displayRole = role !== undefined ? role : currentRole;
 
   return (
@@ -22,23 +22,23 @@ export default function Navbar({ role }: { role?: string | null }) {
         {/* User Profile & Actions */}
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-3">
-             {displayRole && (
-               <span className="uppercase bg-secondary px-2 py-1.5 rounded-md text-[10px] font-bold tracking-wider text-secondary-foreground">
-                 {displayRole}
-               </span>
-             )}
-             <div className="flex flex-col items-end">
-                <span className="text-sm font-bold text-foreground">{name}</span>
-                <span className="text-xs text-muted-foreground">{email}</span>
-             </div>
+            {displayRole && (
+              <span className="uppercase bg-secondary px-2 py-1.5 rounded-md text-[10px] font-bold tracking-wider text-secondary-foreground">
+                {displayRole}
+              </span>
+            )}
+            <div className="flex flex-col items-end">
+              <span className="text-sm font-bold text-foreground">{name}</span>
+              <span className="text-xs text-muted-foreground">{email}</span>
+            </div>
           </div>
-          
+
           {image && (
-            <img 
-              src={image} 
-              alt={`${name}'s avatar`} 
-              width={36} 
-              height={36} 
+            <img
+              src={image}
+              alt={`${name}'s avatar`}
+              width={36}
+              height={36}
               className="rounded-full shadow-sm border border-slate-200"
             />
           )}
