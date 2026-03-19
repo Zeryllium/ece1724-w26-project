@@ -110,7 +110,7 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
            {moduleData.moduleDescription || "No description provided."}
          </p>
          
-         {moduleData.moduleType !== "QUIZ" && submission.files.length > 0 ? (
+         {moduleData.moduleType !== "QUIZ" && submission ? (
            <div className="mt-8">
              <>{/*TODO */}</>
              {/*<a */}
