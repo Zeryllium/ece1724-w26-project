@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { signOutAction } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
@@ -14,9 +15,9 @@ export default function Navbar({ role }: { role?: string | null }) {
     <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md shadow-sm">
       <div className="container mx-auto flex h-16 items-center flex-row justify-between px-6">
         {/* Brand Name */}
-        <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-primary">
+        <Link href="/courses" className="flex items-center gap-2 font-bold text-xl tracking-tight text-primary hover:opacity-80 transition-opacity">
           <span>Demokrit.os</span>
-        </div>
+        </Link>
 
         {/* User Profile & Actions */}
         <div className="flex items-center gap-4">
