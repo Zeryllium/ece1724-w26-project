@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { RxChevronLeft, RxChevronRight } from "react-icons/rx";
+import { RxChevronLeft, RxChevronRight, RxPlus, RxCalendar } from "react-icons/rx";
+import { authClient } from "@/lib/auth-client";
 
 interface CalendarEvent {
   date: Date;
@@ -14,6 +15,9 @@ interface CalendarEvent {
 export default function CourseCalendar({ courseId, modules }: { courseId: string, modules: any[] }) {
   const [mounted, setMounted] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
+  
+  const [syncing, setSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState("");
 
   useEffect(() => {
     setMounted(true);
@@ -67,6 +71,33 @@ export default function CourseCalendar({ courseId, modules }: { courseId: string
     return today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
   };
 
+  const handleGoogleSync = async () => {
+     setSyncing(true);
+     setSyncMessage("");
+     try {
+        const res = await fetch(`/api/courses/${courseId}/calendar-sync`, { method: "POST" });
+        const data = await res.json();
+        
+        if (!res.ok) {
+           if (res.status === 403 && data.error === "Google_Account_Not_Linked") {
+              // the user lacks google tokens. We force them through the auth flow to link.
+              await authClient.linkSocial({ 
+                 provider: "google", 
+                 callbackURL: window.location.href 
+              });
+              return;
+           }
+           throw new Error(data.error);
+        }
+        setSyncMessage(data.message);
+     } catch (err: any) {
+        setSyncMessage(err.message || "Failed to synchronize");
+        setTimeout(() => setSyncMessage(""), 5000);
+     } finally {
+        setSyncing(false);
+     }
+  };
+
   if (!mounted) {
     return (
        <div className="bg-white border rounded-xl shadow-sm p-6 w-full mt-12 min-h-[400px] animate-pulse flex items-center justify-center">
@@ -80,12 +111,30 @@ export default function CourseCalendar({ courseId, modules }: { courseId: string
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div>
            <h2 className="text-2xl font-bold text-slate-800">Course Schedule</h2>
-           <p className="text-sm text-slate-500 mt-1">Assignments and quizzes with defined deadlines.</p>
+           <p className="text-sm text-slate-500 mt-1 mb-2">Assignments and quizzes with defined deadlines.</p>
+           {syncMessage && (
+              <div className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1.5 rounded inline-block">
+                 {syncMessage}
+              </div>
+           )}
         </div>
-        <div className="flex items-center gap-4 bg-slate-50 border rounded-full px-2 py-1 shadow-sm">
-          <button onClick={() => changeMonth(-1)} className="p-2 hover:bg-slate-200 rounded-full transition-colors"><RxChevronLeft size={20} className="text-slate-600"/></button>
-          <span className="text-base font-bold w-36 text-center text-slate-700 tracking-wide">{monthNames[month]} {year}</span>
-          <button onClick={() => changeMonth(1)} className="p-2 hover:bg-slate-200 rounded-full transition-colors"><RxChevronRight size={20} className="text-slate-600"/></button>
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          <button 
+             onClick={handleGoogleSync} 
+             disabled={syncing}
+             className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold border rounded-lg shadow-sm transition-colors ${
+               syncing ? "bg-slate-100 text-slate-400 cursor-not-allowed" : "bg-white text-slate-700 hover:bg-slate-50 border-slate-200"
+             }`}
+          >
+             <RxCalendar size={18} className={syncing ? "animate-spin" : "text-blue-600"}/>
+             {syncing ? "Syncing..." : "Sync to Google Calendar"}
+          </button>
+
+          <div className="flex items-center gap-4 bg-slate-50 border rounded-full px-2 py-1 shadow-sm shrink-0">
+            <button onClick={() => changeMonth(-1)} className="p-2 hover:bg-slate-200 rounded-full transition-colors"><RxChevronLeft size={20} className="text-slate-600"/></button>
+            <span className="text-base font-bold w-36 text-center text-slate-700 tracking-wide">{monthNames[month]} {year}</span>
+            <button onClick={() => changeMonth(1)} className="p-2 hover:bg-slate-200 rounded-full transition-colors"><RxChevronRight size={20} className="text-slate-600"/></button>
+          </div>
         </div>
       </div>
 
