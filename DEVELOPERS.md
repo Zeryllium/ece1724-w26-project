@@ -23,6 +23,10 @@ npm install
 
 # Google GenAI Configuration for Assignment Autograding
 # GEMINI_API_KEY=""
+
+# Google Calendar OAuth Configuration
+# GOOGLE_CLIENT_ID=""
+# GOOGLE_CLIENT_SECRET=""
 ```
 
 The Better Auth secret can be generated through https://better-auth.com/docs/installation or using the following:
@@ -32,6 +36,11 @@ openssl rand -base64 32
 
 For quiz analytics, create a Veracity Learning account here: https://lrs.io/ui/users/home/0/
 Create a new LRS with any name, then within that LRS, naivgate to Management -> Access Keys and create a new access key, which will give the configuration variables above.
+
+For quiz analytics, create a Veracity Learning account here: https://lrs.io/ui/users/home/0/
+Create a new LRS with any name, then within that LRS, naivgate to Management -> Access Keys and create a new access key, which will give the configuration variables above.
+
+For Google Calendar Sync features, you must enable the Calendar API via Google Cloud Console, configure your OAuth Consent Screen with the `https://www.googleapis.com/auth/calendar.events` scope, and provision an OAuth Client ID explicitly bound to `http://localhost:3000/api/auth/callback/google` to test synchronization functionality locally.
 
 ## 2. Database Initialization
 

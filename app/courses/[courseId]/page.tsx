@@ -11,7 +11,7 @@ import * as UI from "@/lib/ui";
 import { RxCardStackPlus, RxCheck, RxChevronLeft, RxLink1, RxLockClosed} from "react-icons/rx";
 import {buttonBaseStyling, buttonGrey, lineBreak, sectionFlex} from "@/lib/ui";
 import DeleteCourseButton from "@/components/DeleteCourseButton";
-
+import CourseCalendar from "@/components/CourseCalendar";
 
 export default async function CourseDetailPage(props: { params: Promise<{ courseId: string }> }) {
   const { courseId } = await props.params;
@@ -181,6 +181,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
           </div>
         </div>
 
+        <CourseCalendar courseId={course.courseId} modules={course.modules} />
 
       </div>
     </>

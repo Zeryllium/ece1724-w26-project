@@ -29,14 +29,17 @@ export async function signUpAction(formData: FormData) {
 
   try {
     await auth.api.signUpEmail({
+      headers: await headers(),
       body: {
         name: name,
         email: email,
         password: password,
       }
     });
-  } catch (error) {
-    return "Failed to register";
+  } catch (error: any) {
+    if (error?.message) return error.message;
+    if (error?.error?.message) return error.error.message;
+    return `Failed to register: ${String(error)}`;
   }
 }
 
@@ -53,13 +56,16 @@ export async function signInAction(formData: FormData) {
 
   try {
     await auth.api.signInEmail({
+      headers: await headers(),
       body: {
         email: email,
         password: password,
       }
     });
-  } catch (error) {
-    return "Invalid credentials";
+  } catch (error: any) {
+    if (error?.message) return error.message;
+    if (error?.error?.message) return error.error.message;
+    return `Invalid credentials: ${String(error)}`;
   }
 }
 
