@@ -19,7 +19,7 @@ export default async function CoursesPage() {
 
   // Fetch all 3 categories concurrently
   const [managingRecords, enrolledRecords, _marketplaceCourses] = await Promise.all([
-    // 1. Managed Courses
+    // Managed Courses
     prisma.managing.findMany({
       where: { instructorId: userId },
       include: {
@@ -29,7 +29,7 @@ export default async function CoursesPage() {
       },
     }),
 
-    // 2. Enrolled Courses
+    // Enrolled Courses
     prisma.enrollment.findMany({
       where: { studentId: userId },
       include: {
@@ -39,7 +39,7 @@ export default async function CoursesPage() {
       }
     }),
 
-    // 3. Marketplace Courses (User isn't managing and isn't enrolled)
+    // Marketplace Courses (User isn't managing and isn't enrolled)
     prisma.course.findMany({
       where: {
         AND: [

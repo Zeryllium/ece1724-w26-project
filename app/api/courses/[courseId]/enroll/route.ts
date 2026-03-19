@@ -18,7 +18,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
   // Actually, Better Auth defaults roles to STUDENT, so it's fine.
 
   try {
-    // 1. Check if course exists
+    // Check if course exists
     const course = await prisma.course.findUnique({
       where: { courseId },
     });
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    // 2. Transact enrollment and course count increment
+    // Transact enrollment and course count increment
     const enrollment = await prisma.$transaction(async (tx) => {
       // Create or update the enrollment
       const en = await tx.enrollment.upsert({
@@ -84,7 +84,7 @@ export async function DELETE(request: NextRequest, props: { params: Promise<{ co
   }
 
   try {
-    // 1. Transact enrollment drop and decrement count
+    // Transact enrollment drop and decrement count
     await prisma.$transaction(async (tx) => {
       const existing = await tx.enrollment.findUnique({
         where: {

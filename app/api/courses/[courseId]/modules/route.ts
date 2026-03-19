@@ -24,7 +24,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
 
     // Grab the module details from the request body
     const body = await request.json();
-    const { moduleTitle, moduleDescription, moduleType, moduleResourceUri, quizConfig } = body;
+    const { moduleTitle, moduleDescription, moduleType, moduleResourceUri, quizConfig, assignmentConfig } = body;
 
     if (!moduleTitle || typeof moduleTitle !== "string" || moduleTitle.trim() === "") {
       return NextResponse.json({ error: "moduleTitle is required" }, { status: 400 });
@@ -44,6 +44,14 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
          return NextResponse.json({ error: "Invalid quiz configuration payload", details: parsedConfig.error.flatten() }, { status: 400 })
       }
       validQuizConfig = parsedConfig.data;
+    }
+
+    let validAssignmentConfig = null;
+    if (moduleType === "ASSIGNMENT" && assignmentConfig) {
+      if (typeof assignmentConfig !== "object" || !assignmentConfig.dueDate) {
+        return NextResponse.json({ error: "Invalid assignment configuration payload" }, { status: 400 });
+      }
+      validAssignmentConfig = assignmentConfig;
     }
 
     const sanitizedTitle = moduleTitle.trim();
@@ -68,8 +76,17 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
           moduleTitle: sanitizedTitle,
           moduleDescription: sanitizedDescription,
           moduleType: moduleType as "LECTURE" | "ASSIGNMENT" | "QUIZ",
-          //TODO
+          moduleResources: sanitizedUri ? {
+            create: [{
+              s3Path: sanitizedUri,
+              originalName: sanitizedUri.split('-').pop() || 'resource',
+              mimeType: sanitizedUri.endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream',
+              size: 0,
+              uploaderId: session.user.id
+            }]
+          } : undefined,
           quizConfig: validQuizConfig ? JSON.parse(JSON.stringify(validQuizConfig)) : null,
+          assignmentConfig: validAssignmentConfig ? JSON.parse(JSON.stringify(validAssignmentConfig)) : null,
         },
       });
     });

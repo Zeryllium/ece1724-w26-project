@@ -104,8 +104,17 @@ describe('Instructor/Manager API Endpoints', () => {
           moduleTitle: 'Mod 3',
           moduleDescription: '',
           moduleType: 'LECTURE',
-          moduleResourceUri: 'http://test.com/vid',
+          moduleResources: {
+            create: [{
+              s3Path: 'http://test.com/vid',
+              originalName: 'http://test.com/vid',
+              mimeType: 'application/octet-stream',
+              size: 0,
+              uploaderId: 'instructor-123'
+            }]
+          },
           quizConfig: null,
+          assignmentConfig: null,
         },
       });
     });

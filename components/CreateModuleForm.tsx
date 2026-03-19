@@ -19,6 +19,15 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
     questions: []
   });
 
+  // assignment state
+  const [assignmentConfig, setAssignmentConfig] = useState({ 
+    dueDate: "",
+    aiGradingEnabled: false,
+    aiRubric: "",
+    aiDifficulty: "standard"
+  });
+  const [assignmentFile, setAssignmentFile] = useState<File | null>(null);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -29,15 +38,44 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
     setError("");
 
     try {
+      let finalResourceUri = moduleResourceUri;
+
+      // Handle PDF Upload first if it's an assignment
+      if (moduleType === "ASSIGNMENT") {
+        if (!assignmentFile) {
+          throw new Error("Please select a PDF file for the assignment.");
+        }
+        if (!assignmentConfig.dueDate) {
+          throw new Error("Please set a due date for the assignment.");
+        }
+        const formData = new FormData();
+        formData.append("file", assignmentFile);
+        
+        const uploadRes = await fetch("/api/upload", {
+          method: "POST",
+          body: formData
+        });
+        
+        if (!uploadRes.ok) {
+           const errData = await uploadRes.json();
+           throw new Error(errData.error || "Failed to upload PDF");
+        }
+        
+        const uploadData = await uploadRes.json();
+        finalResourceUri = uploadData.url;
+      }
+
       const payload: any = {
         moduleTitle, 
         moduleDescription, 
         moduleType, 
-        moduleResourceUri: moduleType === "QUIZ" ? "" : moduleResourceUri 
+        moduleResourceUri: moduleType === "QUIZ" ? "" : finalResourceUri 
       };
 
       if (moduleType === "QUIZ") {
         payload.quizConfig = quizConfig;
+      } else if (moduleType === "ASSIGNMENT") {
+        payload.assignmentConfig = assignmentConfig;
       }
 
       const res = await fetch(`/api/courses/${courseId}/modules`, {
@@ -63,6 +101,13 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
         maxAttempts: 1,
         questions: []
       });
+      setAssignmentConfig({ 
+        dueDate: "",
+        aiGradingEnabled: false,
+        aiRubric: "",
+        aiDifficulty: "standard"
+      });
+      setAssignmentFile(null);
       
       router.refresh();
       router.back();
@@ -155,7 +200,7 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
         </select>
       </div>
 
-      {moduleType !== "QUIZ" ? (
+      {moduleType === "LECTURE" && (
         <div className="space-y-2">
           <label htmlFor="moduleResourceUri" className="block text-sm font-medium">
             Resource URL <span className="text-red-500">*</span>
@@ -170,7 +215,101 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
             placeholder="https://example.com/video.mp4"
           />
         </div>
-      ) : (
+      )}
+
+      {moduleType === "ASSIGNMENT" && (
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-4">
+           <div className="space-y-2">
+              <label className="block text-sm font-medium">
+                 Assignment PDF <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+              <input 
+                type="file" 
+                accept="application/pdf"
+                id="instructor-file-upload"
+                className="hidden"
+                onChange={(e) => setAssignmentFile(e.target.files?.[0] || null)}
+                required
+              />
+              <label 
+                htmlFor="instructor-file-upload" 
+                className="cursor-pointer flex items-center justify-center w-full border-2 border-dashed border-slate-300 rounded-lg p-6 hover:bg-slate-50 transition-colors text-center bg-white"
+              >
+                <div className="flex flex-col items-center gap-2">
+                   <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                   <span className="text-sm font-medium text-slate-700">
+                      {assignmentFile ? assignmentFile.name : "Click to select a PDF file"}
+                   </span>
+                   {!assignmentFile && <span className="text-xs text-slate-500">Only PDF files are supported</span>}
+                </div>
+              </label>
+            </div>
+           </div>
+           <div className="space-y-2">
+              <label className="block text-sm font-medium">
+                 Due Date <span className="text-red-500">*</span>
+              </label>
+              <input 
+                 type="datetime-local" 
+                 value={assignmentConfig.dueDate}
+                 onChange={(e) => setAssignmentConfig({ ...assignmentConfig, dueDate: e.target.value })}
+                 className="w-full border rounded-md px-3 py-2 text-black bg-white"
+                 required
+              />
+           </div>
+
+           {/* AI Grading Section */}
+           <div className="pt-4 border-t border-slate-200 mt-4 space-y-4">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="aiGradingEnabled"
+                  checked={assignmentConfig.aiGradingEnabled}
+                  onChange={(e) => setAssignmentConfig({...assignmentConfig, aiGradingEnabled: e.target.checked})}
+                  className="w-4 h-4 text-blue-600 rounded border-slate-300"
+                />
+                <label htmlFor="aiGradingEnabled" className="text-sm font-semibold text-slate-800">
+                  Enable AI Autograding (Experimental)
+                </label>
+              </div>
+
+              {assignmentConfig.aiGradingEnabled && (
+                <div className="space-y-4 pl-6 border-l-2 border-blue-100">
+                  <div className="space-y-1">
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
+                      Marking Rubric / Criteria <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      value={assignmentConfig.aiRubric}
+                      onChange={(e) => setAssignmentConfig({...assignmentConfig, aiRubric: e.target.value})}
+                      className="w-full border rounded-md px-3 py-2 text-black text-sm outline-none focus:border-blue-500 transition-colors"
+                      rows={4}
+                      placeholder="e.g. 50% for correct final answer, 50% for working steps..."
+                      required={assignmentConfig.aiGradingEnabled}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
+                      Marking Strictness
+                    </label>
+                    <select
+                      value={assignmentConfig.aiDifficulty}
+                      onChange={(e) => setAssignmentConfig({...assignmentConfig, aiDifficulty: e.target.value})}
+                      className="w-full border rounded-md px-3 py-2 text-black text-sm outline-none focus:border-blue-500 transition-colors"
+                    >
+                      <option value="lenient">Lenient (Forgiving on minor errors)</option>
+                      <option value="standard">Standard (Balanced evaluation)</option>
+                      <option value="strict">Strict (Penalizes all deviations)</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+           </div>
+        </div>
+      )}
+
+      {moduleType === "QUIZ" && (
         <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-6">
           <div className="flex gap-4">
             <div className="flex-1 space-y-1">

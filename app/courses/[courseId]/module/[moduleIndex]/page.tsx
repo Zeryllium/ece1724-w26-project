@@ -5,7 +5,10 @@ import {auth, isManaging, isEnrolled, ROLES} from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import ModuleEditorWrapper from "@/components/ModuleEditorWrapper";
 import QuizTaker from "@/components/QuizTaker";
+import AssignmentTaker from "@/components/AssignmentTaker";
+import InstructorAssignmentGrader from "@/components/InstructorAssignmentGrader";
 import InstructorLrsDashboard from "@/components/InstructorLrsDashboard";
+import RoleSetter from "@/components/RoleSetter";
 import {
   mainContainer,
   textH1Style,
@@ -33,7 +36,10 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
 
   const moduleData = await prisma.module.findFirst({
     where: { courseId, moduleIndex: index },
-    include: { course: true }
+    include: { 
+      course: true,
+      moduleResources: true 
+    }
   });
 
   if (!moduleData) notFound();
@@ -50,8 +56,7 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
     redirect(`/courses/${courseId}`);
   }
 
-  // grab any past submission to figure out remaining attempts and timer state
-  const submission = await prisma.submission.findUnique({
+  const submissionRow = await prisma.submission.findUnique({
     where: {
       studentId_moduleId: {
         studentId: session.user.id,
@@ -66,26 +71,41 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
       }
     }
   });
+  
+  const submission = submissionRow ? {
+    ...submissionRow,
+    submissionGrade: Number(submissionRow.submissionGrade)
+  } : null;
 
   let metrics = null;
-  if (canEdit && moduleData.moduleType === "QUIZ") {
-    const totalEnrolled = await prisma.enrollment.count({
-      where: { courseId }
+  let allSubmissions: any[] = [];
+  
+  if (canEdit && (moduleData.moduleType === "QUIZ" || moduleData.moduleType === "ASSIGNMENT")) {
+    const rawSubmissions = await prisma.submission.findMany({
+      where: { moduleId: moduleData.moduleId },
+      include: { student: true }
     });
     
-    const submissions = await prisma.submission.findMany({
-      where: { moduleId: moduleData.moduleId }
-    });
+    allSubmissions = rawSubmissions.map(sub => ({
+      ...sub,
+      submissionGrade: Number(sub.submissionGrade)
+    }));
+    
+    if (moduleData.moduleType === "QUIZ") {
+      const totalEnrolled = await prisma.enrollment.count({
+        where: { courseId }
+      });
 
-    const averageScore = submissions.length > 0
-      ? submissions.reduce((acc, sub) => acc + Number(sub.submissionGrade), 0) / submissions.length
-      : 0;
+      const averageScore = allSubmissions.length > 0
+        ? allSubmissions.reduce((acc, sub) => acc + Number(sub.submissionGrade), 0) / allSubmissions.length
+        : 0;
 
-    metrics = {
-      totalEnrolled,
-      submissionsCount: submissions.length,
-      averageScore
-    };
+      metrics = {
+        totalEnrolled,
+        submissionsCount: allSubmissions.length,
+        averageScore
+      };
+    }
   }
 
   const headerLeft = (
@@ -110,19 +130,41 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
            {moduleData.moduleDescription || "No description provided."}
          </p>
          
-         {moduleData.moduleType !== "QUIZ" && submission.files.length > 0 ? (
+         {moduleData.moduleType === "LECTURE" && moduleData.moduleResources && moduleData.moduleResources.length > 0 ? (
            <div className="mt-8">
-             <>{/*TODO */}</>
-             {/*<a */}
-             {/*   href={moduleData.moduleResourceUri} */}
-             {/*   target="_blank" */}
-             {/*   rel="noreferrer"*/}
-             {/*   className={buttonBlueIndigo + " inline-block"}*/}
-             {/*>*/}
-             {/*   Open Resource*/}
-             {/*</a>*/}
+             <a 
+                href={moduleData.moduleResources[0].s3Path} 
+                target="_blank" 
+                rel="noreferrer"
+                className={buttonBlueIndigo + " inline-block"}
+             >
+                Open Resource
+             </a>
            </div>
          ) : null}
+
+         {moduleData.moduleType === "ASSIGNMENT" && (
+            <div className="mt-6 p-4 rounded-lg bg-slate-50 border border-slate-200">
+               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="font-semibold text-slate-800">Assignment Materials</h3>
+                    {moduleData.assignmentConfig && (moduleData.assignmentConfig as any).dueDate && (
+                      <p className="text-sm text-slate-600 mt-1">Due: {new Date((moduleData.assignmentConfig as any).dueDate).toLocaleString()}</p>
+                    )}
+                  </div>
+                  {moduleData.moduleResources && moduleData.moduleResources.length > 0 && (
+                     <a 
+                       href={moduleData.moduleResources[0].s3Path} 
+                       target="_blank" 
+                       rel="noreferrer"
+                       className={buttonBlueIndigo + " text-sm shrink-0 whitespace-nowrap text-center"}
+                     >
+                        Download PDF
+                     </a>
+                  )}
+               </div>
+            </div>
+         )}
       </div>
 
       {moduleData.moduleType === "QUIZ" && moduleData.quizConfig && !canEdit && (
@@ -135,6 +177,17 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
             studentEmail={session.user.email}
             quizConfig={moduleData.quizConfig as any} 
             existingSubmission={submission} 
+         />
+      )}
+
+      {moduleData.moduleType === "ASSIGNMENT" && !canEdit && (
+         <AssignmentTaker 
+            courseId={courseId} 
+            moduleIndex={moduleData.moduleIndex} 
+            moduleId={moduleData.moduleId}
+            studentId={session.user.id}
+            existingSubmission={submission} 
+            dueDate={(moduleData.assignmentConfig as any)?.dueDate}
          />
       )}
 
@@ -160,6 +213,14 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
         </div>
       )}
 
+      {moduleData.moduleType === "ASSIGNMENT" && canEdit && (
+         <InstructorAssignmentGrader 
+            courseId={courseId}
+            moduleIndex={moduleData.moduleIndex}
+            submissions={allSubmissions}
+         />
+      )}
+
       {moduleData.moduleType === "QUIZ" && canEdit && (
          <InstructorLrsDashboard courseId={courseId} moduleId={moduleData.moduleId} />
       )}
@@ -167,6 +228,8 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
   );
 
   return (
+    <>
+    <RoleSetter role={canEdit ? "INSTRUCTOR" : "STUDENT"} />
     <div className={mainContainer}>
       {canEdit ? (
         <ModuleEditorWrapper 
@@ -186,5 +249,6 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
         </>
       )}
     </div>
+    </>
   );
 }
