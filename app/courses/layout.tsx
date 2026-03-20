@@ -10,7 +10,7 @@ export default async function CoursesLayout({
   modal,
 }: {
   children: React.ReactNode;
-  modal: React.ReactNode;
+  modal?: React.ReactNode;
 }) {
   const session = await auth.api.getSession({
     headers: await headers(),

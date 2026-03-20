@@ -8,7 +8,9 @@ import DeleteModuleButton from "@/components/DeleteModuleButton";
 import EnrollButton from "@/components/EnrollButton";
 import RoleSetter from "@/components/RoleSetter";
 import * as UI from "@/lib/ui";
-import { RxCardStackPlus, RxCheck, RxChevronLeft, RxLink1, RxLockClosed} from "react-icons/rx";
+import {RxCardStack, RxCardStackPlus, RxCheck, RxChevronLeft, RxLink1, RxLockClosed} from "react-icons/rx";
+import CourseEditorWrapper from "@/components/CourseEditorWrapper";
+import DiscussionForum from "@/components/DiscussionForum";
 import {buttonBaseStyling, buttonGrey, lineBreak, sectionFlex} from "@/lib/ui";
 import DeleteCourseButton from "@/components/DeleteCourseButton";
 import CourseCalendar from "@/components/CourseCalendar";
@@ -181,8 +183,29 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
           </div>
         </div>
 
-        <CourseCalendar courseId={course.courseId} modules={course.modules} />
+        { <CourseCalendar courseId={course.courseId} modules={course.modules} /> }
 
+        {/* discussion section */}
+        <div>
+          <div className={sectionFlex}>
+            <h2 className={UI.textH2Style}>Course Discussion</h2>
+          </div>
+          <hr className={lineBreak} />
+          {_isEnrolled || _isManaging ? (
+            <DiscussionForum
+              courseId={courseId}
+              currentUserId={session.user.id}
+              canPost={!!(_isEnrolled || _isManaging)}
+              canDelete={!!_isManaging}
+            />
+          ) : (
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm text-center">
+              <p className="text-slate-600">
+                You must be enrolled in this course or be a course instructor to view comments.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

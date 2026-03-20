@@ -8,14 +8,14 @@ import {auth, ROLES} from "@/lib/auth";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { fileId: string } }
+  { params }: { params: Promise<{ fileId: string }> }
 ) {
   const reqHeaders = await headers()
   const session = await auth.api.getSession({
     headers: reqHeaders,
   });
 
-  const {fileId} = await params
+  const {fileId} = await params;
 
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
