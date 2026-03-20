@@ -4,6 +4,10 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { QuizConfig } from "@/lib/quiz-schema";
 import { GoogleGenAI } from "@google/genai";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { s3Client } from "@/lib/s3-client";
+import { writeFile, unlink } from "fs/promises";
+import { tmpdir } from "os";
 import path from "path";
 
 export async function POST(request: NextRequest, props: { params: Promise<{ courseId: string; moduleIndex: string }> }) {
@@ -52,12 +56,30 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
 
         // Perform AI Grading if enabled
         if (assignmentConfig?.aiGradingEnabled) {
+           let tempFilePath: string | null = null;
            try {
               const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-              const physicalPath = path.join(process.cwd(), "public", assignmentFileUrl);
 
-              const uploadRes = await ai.files.upload({ file: physicalPath, config: { mimeType: 'application/pdf' } });
-              
+              // Look up the GCS key for this file from the DB
+              const fileRecord = await prisma.file.findUnique({ where: { id: assignmentFileUrl } });
+              if (!fileRecord) throw new Error("File record not found in DB");
+
+              // Download from GCS
+              const getCmd = new GetObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: fileRecord.s3Path,
+              });
+              const s3Res = await s3Client.send(getCmd);
+              const chunks: Uint8Array[] = [];
+              for await (const chunk of s3Res.Body as any) {
+                chunks.push(chunk);
+              }
+              const fileBytes = Buffer.concat(chunks);
+              tempFilePath = path.join(tmpdir(), `${assignmentFileUrl}.pdf`);
+              await writeFile(tempFilePath, fileBytes);
+
+              const uploadRes = await ai.files.upload({ file: tempFilePath, config: { mimeType: 'application/pdf' } });
+
               const prompt = `You are an expert grading assistant. Review the attached assignment submission. \n\nRubric/Criteria:\n${assignmentConfig.aiRubric || "Standard evaluation."}\n\nStrictness Level:\n${assignmentConfig.aiDifficulty || "standard"}\n\nPlease grade this from 0 to 100 and provide constructive feedback for the student in the exact requested JSON format.`;
 
               const result = await ai.models.generateContent({
@@ -90,8 +112,11 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
               }
            } catch (err: any) {
               console.error("AI Grading failed:", err);
-              // Fallback to incomplete if AI breaks
               instructorFeedback = "AI Autograder failed to process this document. An instructor will review it manually.";
+           } finally {
+              if (tempFilePath) {
+                try { await unlink(tempFilePath); } catch {}
+              }
            }
         }
         
@@ -106,19 +131,10 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
             submissionGrade: finalGrade,
             submissionStatus: finalStatus,
             assignmentState: {
-              fileUrl: assignmentFileUrl,
+              fileId: assignmentFileUrl,
               submittedAt,
               instructorFeedback
             },
-            files: {
-               create: [{
-                  s3Path: assignmentFileUrl,
-                  originalName: assignmentFileUrl.split('-').pop() || 'submission.pdf',
-                  mimeType: 'application/pdf',
-                  size: 0,
-                  uploaderId: session.user.id
-               }]
-            }
           },
           create: {
             studentId: session.user.id,
@@ -126,19 +142,10 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
             submissionGrade: finalGrade,
             submissionStatus: finalStatus,
             assignmentState: {
-              fileUrl: assignmentFileUrl,
+              fileId: assignmentFileUrl,
               submittedAt,
               instructorFeedback
             },
-            files: {
-               create: [{
-                  s3Path: assignmentFileUrl,
-                  originalName: assignmentFileUrl.split('-').pop() || 'submission.pdf',
-                  mimeType: 'application/pdf',
-                  size: 0,
-                  uploaderId: session.user.id
-               }]
-            }
           }
         });
 

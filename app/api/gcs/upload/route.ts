@@ -3,9 +3,9 @@ import { type NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { s3Client } from "@/lib/s3-client";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import {auth} from "@/lib/auth";
-import {prisma} from "@/lib/prisma";
-import {SubmissionStatus, SubmissionType} from "@/generated/prisma/enums";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { SubmissionStatus, SubmissionType } from "@/generated/prisma/enums";
 
 export async function POST(req: NextRequest) {
   const reqHeaders = await headers()
@@ -36,9 +36,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
     if (!uploadType || (uploadType !== "MODULE" && uploadType !== "SUBMISSION")) {
-      return NextResponse.json({ error: "File does not have a matching upload type"}, { status: 400 });
+      return NextResponse.json({ error: "File does not have a matching upload type" }, { status: 400 });
     } else if (!moduleId || moduleId.trim() === "") {
-      return NextResponse.json({error: "File upload does not have a valid moduleId"}, {status: 400});
+      return NextResponse.json({ error: "File upload does not have a valid moduleId" }, { status: 400 });
     }
 
     try {
@@ -48,21 +48,20 @@ export async function POST(req: NextRequest) {
         }
       })
     } catch {
-      return NextResponse.json({error: "File upload does not have a valid moduleId"}, {status: 400});
+      return NextResponse.json({ error: "File upload does not have a valid moduleId" }, { status: 400 });
     }
 
     const fileId = crypto.randomUUID();
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
     const key = `uploads/users/${userId}/${fileId}-${file.name}`;
 
     const command = new PutObjectCommand({
       Bucket: process.env.S3_BUCKET_NAME,
       Key: key,
-      Body: fileBuffer,
       ContentType: file.type || "application/octet-stream",
+      ContentLength: file.size,
     });
 
-    const signedUrl = await getSignedUrl(s3Client, command, {expiresIn:300});
+    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 });
 
     await prisma.$transaction(async (tx) => {
       let newFile = null
