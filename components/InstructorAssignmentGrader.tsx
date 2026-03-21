@@ -90,7 +90,9 @@ export default function InstructorAssignmentGrader({
         </thead>
         <tbody>
           {submissions.map((sub) => {
-            const hasSubmission = sub.assignmentState && sub.assignmentState.fileUrl;
+            const hasSubmission = sub.assignmentState && (sub.assignmentState.fileId || sub.assignmentState.fileUrl);
+            const fileId = sub.assignmentState?.fileId;
+            const legacyFileUrl = sub.assignmentState?.fileUrl;
             const submittedAt = hasSubmission ? new Date(sub.assignmentState.submittedAt).toLocaleString() : "N/A";
 
             return (
@@ -105,7 +107,7 @@ export default function InstructorAssignmentGrader({
                 <td className="py-4 px-4">
                   {hasSubmission ? (
                     <a 
-                       href={sub.assignmentState.fileUrl} 
+                       href={fileId ? `/api/gcs/${fileId}/download` : legacyFileUrl} 
                        target="_blank" 
                        rel="noreferrer"
                        className="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline"

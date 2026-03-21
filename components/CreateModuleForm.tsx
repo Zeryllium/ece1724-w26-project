@@ -20,7 +20,7 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
   });
 
   // assignment state
-  const [assignmentConfig, setAssignmentConfig] = useState({ 
+  const [assignmentConfig, setAssignmentConfig] = useState({
     dueDate: "",
     aiGradingEnabled: false,
     aiRubric: "",
@@ -39,9 +39,9 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
 
     try {
       const payload: any = {
-        moduleTitle, 
-        moduleDescription, 
-        moduleType, 
+        moduleTitle,
+        moduleDescription,
+        moduleType,
       };
 
       if (moduleType === "QUIZ") {
@@ -116,7 +116,7 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
         aiDifficulty: "standard"
       });
       setAssignmentFile(null);
-      
+
       router.refresh();
       router.back();
 
@@ -176,7 +176,7 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
     <form onSubmit={handleSubmit} className="p-6 space-y-4">
       <h2 className="text-xl font-semibold">Add a New Module</h2>
       {error && <div className="text-red-500 text-sm">{error}</div>}
-      
+
       <div className="space-y-2">
         <label htmlFor="moduleTitle" className="block text-sm font-medium">
           Module Title <span className="text-red-500">*</span>
@@ -210,93 +210,93 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
 
       {moduleType === "ASSIGNMENT" && (
         <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-4">
-           <div className="space-y-2">
-              <label className="block text-sm font-medium">
-                 Assignment PDF <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-              <input 
-                type="file" 
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">
+              Assignment PDF <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <input
+                type="file"
                 accept="application/pdf"
                 id="instructor-file-upload"
                 className="hidden"
                 onChange={(e) => setAssignmentFile(e.target.files?.[0] || null)}
                 required
               />
-              <label 
-                htmlFor="instructor-file-upload" 
+              <label
+                htmlFor="instructor-file-upload"
                 className="cursor-pointer flex items-center justify-center w-full border-2 border-dashed border-slate-300 rounded-lg p-6 hover:bg-slate-50 transition-colors text-center bg-white"
               >
                 <div className="flex flex-col items-center gap-2">
-                   <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
-                   <span className="text-sm font-medium text-slate-700">
-                      {assignmentFile ? assignmentFile.name : "Click to select a PDF file"}
-                   </span>
-                   {!assignmentFile && <span className="text-xs text-slate-500">Only PDF files are supported</span>}
+                  <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                  <span className="text-sm font-medium text-slate-700">
+                    {assignmentFile ? assignmentFile.name : "Click to select a PDF file"}
+                  </span>
+                  {!assignmentFile && <span className="text-xs text-slate-500">Only PDF files are supported</span>}
                 </div>
               </label>
             </div>
-           </div>
-           <div className="space-y-2">
-              <label className="block text-sm font-medium">
-                 Due Date <span className="text-red-500">*</span>
-              </label>
-              <input 
-                 type="datetime-local" 
-                 value={assignmentConfig.dueDate}
-                 onChange={(e) => setAssignmentConfig({ ...assignmentConfig, dueDate: e.target.value })}
-                 className="w-full border rounded-md px-3 py-2 text-black bg-white"
-                 required
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">
+              Due Date <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="datetime-local"
+              value={assignmentConfig.dueDate}
+              onChange={(e) => setAssignmentConfig({ ...assignmentConfig, dueDate: e.target.value })}
+              className="w-full border rounded-md px-3 py-2 text-black bg-white"
+              required
+            />
+          </div>
+
+          {/* AI Grading Section */}
+          <div className="pt-4 border-t border-slate-200 mt-4 space-y-4">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="aiGradingEnabled"
+                checked={assignmentConfig.aiGradingEnabled}
+                onChange={(e) => setAssignmentConfig({ ...assignmentConfig, aiGradingEnabled: e.target.checked })}
+                className="w-4 h-4 text-blue-600 rounded border-slate-300"
               />
-           </div>
+              <label htmlFor="aiGradingEnabled" className="text-sm font-semibold text-slate-800">
+                Enable AI Autograding (Experimental)
+              </label>
+            </div>
 
-           {/* AI Grading Section */}
-           <div className="pt-4 border-t border-slate-200 mt-4 space-y-4">
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="aiGradingEnabled"
-                  checked={assignmentConfig.aiGradingEnabled}
-                  onChange={(e) => setAssignmentConfig({...assignmentConfig, aiGradingEnabled: e.target.checked})}
-                  className="w-4 h-4 text-blue-600 rounded border-slate-300"
-                />
-                <label htmlFor="aiGradingEnabled" className="text-sm font-semibold text-slate-800">
-                  Enable AI Autograding (Experimental)
-                </label>
-              </div>
-
-              {assignmentConfig.aiGradingEnabled && (
-                <div className="space-y-4 pl-6 border-l-2 border-blue-100">
-                  <div className="space-y-1">
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Marking Rubric / Criteria <span className="text-red-500">*</span>
-                    </label>
-                    <textarea
-                      value={assignmentConfig.aiRubric}
-                      onChange={(e) => setAssignmentConfig({...assignmentConfig, aiRubric: e.target.value})}
-                      className="w-full border rounded-md px-3 py-2 text-black text-sm outline-none focus:border-blue-500 transition-colors"
-                      rows={4}
-                      placeholder="e.g. 50% for correct final answer, 50% for working steps..."
-                      required={assignmentConfig.aiGradingEnabled}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Marking Strictness
-                    </label>
-                    <select
-                      value={assignmentConfig.aiDifficulty}
-                      onChange={(e) => setAssignmentConfig({...assignmentConfig, aiDifficulty: e.target.value})}
-                      className="w-full border rounded-md px-3 py-2 text-black text-sm outline-none focus:border-blue-500 transition-colors"
-                    >
-                      <option value="lenient">Lenient (Forgiving on minor errors)</option>
-                      <option value="standard">Standard (Balanced evaluation)</option>
-                      <option value="strict">Strict (Penalizes all deviations)</option>
-                    </select>
-                  </div>
+            {assignmentConfig.aiGradingEnabled && (
+              <div className="space-y-4 pl-6 border-l-2 border-blue-100">
+                <div className="space-y-1">
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    Marking Rubric / Criteria <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    value={assignmentConfig.aiRubric}
+                    onChange={(e) => setAssignmentConfig({ ...assignmentConfig, aiRubric: e.target.value })}
+                    className="w-full border rounded-md px-3 py-2 text-black text-sm outline-none focus:border-blue-500 transition-colors"
+                    rows={4}
+                    placeholder="e.g. 50% for correct final answer, 50% for working steps..."
+                    required={assignmentConfig.aiGradingEnabled}
+                  />
                 </div>
-              )}
-           </div>
+                <div className="space-y-1">
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    Marking Strictness
+                  </label>
+                  <select
+                    value={assignmentConfig.aiDifficulty}
+                    onChange={(e) => setAssignmentConfig({ ...assignmentConfig, aiDifficulty: e.target.value })}
+                    className="w-full border rounded-md px-3 py-2 text-black text-sm outline-none focus:border-blue-500 transition-colors"
+                  >
+                    <option value="lenient">Lenient (Forgiving on minor errors)</option>
+                    <option value="standard">Standard (Balanced evaluation)</option>
+                    <option value="strict">Strict (Penalizes all deviations)</option>
+                  </select>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -304,38 +304,38 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
         <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-6">
           <div className="flex gap-4">
             <div className="flex-1 space-y-1">
-               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Time Limit (mins)</label>
-               <input 
-                  type="number" 
-                  min="1"
-                  value={quizConfig.timeLimit} 
-                  onChange={(e) => setQuizConfig({...quizConfig, timeLimit: parseInt(e.target.value) || 1 })}
-                  className="w-full border rounded-md px-3 py-2 text-black"
-                  required
-               />
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Time Limit (mins)</label>
+              <input
+                type="number"
+                min="1"
+                value={quizConfig.timeLimit}
+                onChange={(e) => setQuizConfig({ ...quizConfig, timeLimit: parseInt(e.target.value) || 1 })}
+                className="w-full border rounded-md px-3 py-2 text-black"
+                required
+              />
             </div>
             <div className="flex-1 space-y-1">
-               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Max Attempts</label>
-               <input 
-                  type="number" 
-                  min="1"
-                  value={quizConfig.maxAttempts} 
-                  onChange={(e) => setQuizConfig({...quizConfig, maxAttempts: parseInt(e.target.value) || 1 })}
-                  className="w-full border rounded-md px-3 py-2 text-black"
-                  required
-               />
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Max Attempts</label>
+              <input
+                type="number"
+                min="1"
+                value={quizConfig.maxAttempts}
+                onChange={(e) => setQuizConfig({ ...quizConfig, maxAttempts: parseInt(e.target.value) || 1 })}
+                className="w-full border rounded-md px-3 py-2 text-black"
+                required
+              />
             </div>
             <div className="flex-1 space-y-1">
-               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Due Date (Optional)</label>
-               <input 
-                  type="datetime-local" 
-                  value={quizConfig.dueDate || ""} 
-                  onChange={(e) => setQuizConfig({...quizConfig, dueDate: e.target.value })}
-                  className="w-full border rounded-md px-3 py-2 text-black bg-white"
-               />
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Due Date (Optional)</label>
+              <input
+                type="datetime-local"
+                value={quizConfig.dueDate || ""}
+                onChange={(e) => setQuizConfig({ ...quizConfig, dueDate: e.target.value })}
+                className="w-full border rounded-md px-3 py-2 text-black bg-white"
+              />
             </div>
           </div>
-          
+
           <div className="space-y-4">
             <h3 className="font-bold text-slate-700 border-b pb-2">Questions</h3>
             {quizConfig.questions.map((q, qIndex) => (
@@ -346,42 +346,42 @@ export default function CreateModuleForm({ courseId }: { courseId: string }) {
                   </button>
                 )}
                 <div>
-                   <label className="block text-sm font-medium text-slate-700 mb-1">Question {qIndex + 1}</label>
-                   <input type="text" value={q.text} onChange={(e) => updateQuestion(qIndex, 'text', e.target.value)} placeholder="What is the..." required className="w-full border border-slate-300 rounded-md px-3 py-2 text-black focus:ring-2 focus:ring-blue-500 outline-none" />
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Question {qIndex + 1}</label>
+                  <input type="text" value={q.text} onChange={(e) => updateQuestion(qIndex, 'text', e.target.value)} placeholder="What is the..." required className="w-full border border-slate-300 rounded-md px-3 py-2 text-black focus:ring-2 focus:ring-blue-500 outline-none" />
                 </div>
                 <div className="space-y-2 ml-4 border-l-2 border-slate-100 pl-4">
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Answers <span className="font-normal normal-case text-slate-400">(Select the correct one)</span></p>
                   {q.options.map((opt, optIndex) => (
                     <div key={optIndex} className="flex flex-row items-center gap-2">
-                       <input 
-                         type="radio" 
-                         name={`correctOption-${q.id}`} 
-                         checked={q.correctOptionIndex === optIndex} 
-                         onChange={() => updateQuestion(qIndex, 'correctOptionIndex', optIndex)} 
-                         className="w-4 h-4 text-blue-600"
-                       />
-                       <input 
-                         type="text" 
-                         value={opt} 
-                         onChange={(e) => updateOption(qIndex, optIndex, e.target.value)} 
-                         placeholder={`Option ${optIndex + 1}`} 
-                         required 
-                         className="flex-1 border rounded px-2 py-1 text-sm text-black" 
-                       />
-                       {q.options.length > 2 && (
-                         <button type="button" onClick={() => removeOption(qIndex, optIndex)} className="text-slate-400 hover:text-red-500"><RxTrash size={16}/></button>
-                       )}
+                      <input
+                        type="radio"
+                        name={`correctOption-${q.id}`}
+                        checked={q.correctOptionIndex === optIndex}
+                        onChange={() => updateQuestion(qIndex, 'correctOptionIndex', optIndex)}
+                        className="w-4 h-4 text-blue-600"
+                      />
+                      <input
+                        type="text"
+                        value={opt}
+                        onChange={(e) => updateOption(qIndex, optIndex, e.target.value)}
+                        placeholder={`Option ${optIndex + 1}`}
+                        required
+                        className="flex-1 border rounded px-2 py-1 text-sm text-black"
+                      />
+                      {q.options.length > 2 && (
+                        <button type="button" onClick={() => removeOption(qIndex, optIndex)} className="text-slate-400 hover:text-red-500"><RxTrash size={16} /></button>
+                      )}
                     </div>
                   ))}
                   <button type="button" onClick={() => addOption(qIndex)} className="text-blue-600 hover:text-blue-800 text-xs font-semibold flex items-center gap-1 mt-2">
-                    <RxPlus/> Add Option
+                    <RxPlus /> Add Option
                   </button>
                 </div>
               </div>
             ))}
-            
+
             <button type="button" onClick={addQuestion} className={buttonGrey + " w-full border-dashed border-2 py-4"}>
-               <RxPlus className="mr-2 inline"/> Add Another Question
+              <RxPlus className="mr-2 inline" /> Add Another Question
             </button>
           </div>
         </div>
