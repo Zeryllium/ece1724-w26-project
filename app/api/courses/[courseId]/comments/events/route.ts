@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { clean } from "better-auth/react";
 
 // Store active connections per course
 const courseConnections = new Map<string, Set<ReadableStreamDefaultController>>();
@@ -48,7 +47,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ cours
             text: c.commentText,
             authorId: c.authorId,
             authorName: c.author.name,
-            authorRole: c.author.role,
+            authorRole: c.authorRole,
             createdAt: c.createdAt.toISOString(),
           }))
         });

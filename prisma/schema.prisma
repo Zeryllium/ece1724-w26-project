@@ -84,6 +84,7 @@ model Comment {
   commentText String
   courseId    String   @db.Uuid
   authorId    String
+  authorRole  UserRole @default(STUDENT)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

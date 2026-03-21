@@ -26,6 +26,7 @@ export default function DiscussionForum({
   const [comments, setComments] = useState<Comment[]>([]);
   const [newText, setNewText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isForumLoading, setIsForumLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
 
@@ -34,41 +35,60 @@ export default function DiscussionForum({
   }, [comments]);
 
   useEffect(() => {
-    // Connect to Server-Sent Events
-    const eventSource = new EventSource(`/api/courses/${courseId}/comments/events`);
-    eventSourceRef.current = eventSource;
+    let eventSource: EventSource | null = null;
+    let reconnectTimer: number | null = null;
 
-    eventSource.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
+    const connect = () => {
+      eventSource = new EventSource(`/api/courses/${courseId}/comments/events`);
+      eventSourceRef.current = eventSource;
 
-        if (data.type === "initial") {
-          setComments(data.comments);
-        } else if (data.type === "new_comment") {
-          setComments(prev => {
-            // Avoid duplicates
-            if (prev.some(c => c.commentId === data.comment.commentId)) {
-              return prev;
-            }
-            return [...prev, data.comment];
-          });
-        } else if (data.type === "delete_comment") {
-          setComments(prev => prev.filter(c => c.commentId !== data.commentId));
-        } else if (data.type === "error") {
-          setError(data.message);
+      eventSource.onopen = () => {
+        setError(null);
+      };
+
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+
+          if (data.type === "initial") {
+            setComments(data.comments);
+            setIsForumLoading(false);
+          } else if (data.type === "new_comment") {
+            setComments(prev => {
+              if (prev.some(c => c.commentId === data.comment.commentId)) {
+                return prev;
+              }
+              return [...prev, data.comment];
+            });
+          } else if (data.type === "delete_comment") {
+            setComments(prev => prev.filter(c => c.commentId !== data.commentId));
+          } else if (data.type === "error") {
+            setError(data.message);
+          }
+        } catch (err) {
+          console.error("Error parsing SSE data:", err);
         }
-      } catch (err) {
-        console.error("Error parsing SSE data:", err);
-      }
+      };
+
+      eventSource.onerror = (err) => {
+        console.error("SSE connection error:", err);
+        setError("Lost connection to discussion. Reconnecting...");
+        eventSource?.close();
+
+        if (reconnectTimer) {
+          window.clearTimeout(reconnectTimer);
+        }
+        reconnectTimer = window.setTimeout(connect, 3000);
+      };
     };
 
-    eventSource.onerror = (error) => {
-      console.error("SSE connection error:", error);
-      setError("Lost connection to discussion. Please refresh the page.");
-    };
+    connect();
 
     return () => {
-      eventSource.close();
+      if (reconnectTimer) {
+        window.clearTimeout(reconnectTimer);
+      }
+      eventSource?.close();
     };
   }, [courseId]);
 
@@ -141,7 +161,9 @@ export default function DiscussionForum({
       )}
 
       <div className="mt-6 space-y-4">
-        {sortedComments.length === 0 ? (
+        {isForumLoading ? (
+          <p className="text-sm text-slate-500">Loading comments...</p>
+        ) : sortedComments.length === 0 ? (
           <p className="text-sm text-slate-500">No comments.</p>
         ) : (
             <>
@@ -151,10 +173,10 @@ export default function DiscussionForum({
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-slate-900">{comment.authorName}</p>
+                    <p>{comment.authorName}</p>
                     {comment.authorRole === 'INSTRUCTOR' && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        Instructor
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        INSTRUCTOR
                       </span>
                     )}
                   </div>

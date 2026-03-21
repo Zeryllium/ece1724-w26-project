@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { auth, isEnrolled, isManaging } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { UserRole } from "@/generated/prisma/client";
 import { broadcastCommentUpdate } from "./events/route";
 
 export async function GET(request: NextRequest, props: { params: Promise<{ courseId: string }> }) {
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ cours
         text: c.commentText,
         authorId: c.authorId,
         authorName: c.author.name,
-        authorRole: c.author.role,
+        authorRole: c.authorRole || c.author.role,
         createdAt: c.createdAt.toISOString(),
       }))
     );
@@ -47,6 +48,8 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
     return NextResponse.json({ error: "Please enroll to post a comment." }, { status: 403 });
   }
 
+  const authorRole: UserRole = managing ? UserRole.INSTRUCTOR : UserRole.STUDENT;
+
   const body = await request.json();
   const text = typeof body.text === "string" ? body.text.trim() : "";
 
@@ -60,6 +63,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
         commentText: text,
         courseId,
         authorId: session.user.id,
+        authorRole,
       }
     });
 
@@ -71,7 +75,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
         text: comment.commentText,
         authorId: comment.authorId,
         authorName: session.user.name,
-        authorRole: session.user.role,
+        authorRole,
         createdAt: comment.createdAt.toISOString(),
       }
     });
@@ -81,7 +85,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
       text: comment.commentText,
       authorId: comment.authorId,
       authorName: session.user.name,
-      authorRole: session.user.role,
+      authorRole,
       createdAt: comment.createdAt.toISOString(),
     });
   } catch (error) {
