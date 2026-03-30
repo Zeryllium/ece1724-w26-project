@@ -4,10 +4,20 @@ A full-stack personalized learning platform.
 
 ## Team Information
 David Zhang  
-Tyler Sun  
+Tyler Sun, 1007457645, tyl.sun@mail.utoronto.ca  
 Rohan   
 
 ---
+
+## Motivation
+
+## Objectives
+
+Demokritos, meaning "chosen of the people", aims to serve as an online, user friendly learning platform providing a customizable learning experience for students and a flexible central hub for instructors. The website should be designed for the user experience of instructors and students alike, meaning users should have designated permissions and roles in each of their courses depending on if they are a teacher or student for the course. Proper user authentication and a comprehensive user schema with user roles will be needed to achieve this.
+
+Instructors should be able to create their own courses, upload relevant course material or links, and create assessments through in class quizzes or assignments. Students should be able to find open courses and enroll in classes of interest. In enrolled classes, they should be able to view published course modules, upload files to respond to assignments and answer quizzes posted by the teacher.
+
+## Technical Stack
 
 The report should clearly and concisely cover the following aspects:
 
