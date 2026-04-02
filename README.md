@@ -23,11 +23,11 @@ Instructors should be able to create their own courses, upload relevant course m
 
 The application is developed with a full stack approach using Next.js.
 
-Frontend: React framework with Tailwind CSS for styling and shadcn/ui components
-Backend: Next.js API routes
-Database: PostgreSQL with Prisma ORM schema
-File Management: Google Cloud Storage
-Authentication: Better Auth
+Frontend: React framework with Tailwind CSS for styling and shadcn/ui components  
+Backend: Next.js API routes  
+Database: PostgreSQL with Prisma ORM schema  
+File Management: Google Cloud Storage  
+Authentication: Better Auth  
 External APIs:
 
     Google Calendar API
@@ -58,6 +58,34 @@ Students can:
 Both students and instructors can browse the course schedule and sync it to their Google Calendar, as well as engage with each other by posting in the course discussion.
 
 ## User Guide
+
+When a user visits the website for the first time, they will be prompted with Login and Sign Up options. If the user does not have an account, they should register an account with their name, an email address, and a password - they can later use this email and password to login after creating an account.
+
+![alt text](images/landing_page.png)
+![alt text](images/signup.png)
+
+After logging in, users will be able to view open courses for enrollment by clicking on Add Course which will display options from the Course Marketplace. They can also teach a course by selecting Create Course next to Courses You Teach. Any courses you've created and are teaching can be seen here. Once you have enrolled in a course, it will appear in the Enrolled Course section showing the number of modules the course has and the courses's current completion status. Users can navigate back to this home page from any page by clicking on Demokrit.os on the top left, and log out from the option in the top right.
+
+![alt text](images/course_page.png)
+
+### Instructor Guide
+
+Modals will pop up for instructors to create and edit their courses, as well as to create and edit course modules. A course name is mandatory to create a course, and an optional course description can also be provided. Instructors can create any number of course modules from three types, lecture, assignment, and quiz. A lecture module requires a lecture title and optional description, though it is best if the description contains a URL or some other information allowing students to learn new material. Assignments are similar, but also allow for the instructor to attach a PDF file for assignment questions and/or instructions which students can view. A deadline can be set which will be shown on the course schedule. The instructor can also enable AI autograding which automatically grades student submissions through Gemini AI if desired.
+
+![alt text](images/create_course.png)
+![alt text](images/assignment.png)
+
+Quizzes can be created as well, where instructors can customize the time limit, maximum number of attempts and number of questions. Instructors can also set a due date, but unlike assignments, due dates here are optional allowing for practice quizzes if needed. Questions are multiple choice, and the number of options available in each question can be customized for each one.
+
+Viewing quiz details will show overall quiz analytics from student attempts from the Veracity Learning API. Performance metrics shows total submissions, the average grade, and overall completion rate of the quiz. Behavioral analytics shows total quiz attempts or starts, total completions, the average duration taken on the quiz, and the average tab switches to another page over quiz attempts.
+
+![alt text](create_quiz.png)
+
+Instructors can view the course schedule and sync it to their personal Google Calendar if desired. They can also participate in course discussion at the bottom of the course page to answer questions and encourage interactivity with their students. Comments from an instructor will have a red marker to help distinguish their answers from student posts. Instructors are able to moderate discussion by deleting any comment posted in the course discussion if desired.
+
+### Student Guide
+
+## Deployment Guide
 
 The report should clearly and concisely cover the following aspects:
 
