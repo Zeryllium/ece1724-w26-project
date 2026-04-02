@@ -3,9 +3,12 @@
 A full-stack personalized learning platform.
 
 ## Team Information
-David Zhang  
-Tyler Sun, 1007457645, tyl.sun@mail.utoronto.ca  
-Rohan   
+
+| Name        | Student Number | Email                          |
+|-------------|----------------|--------------------------------|
+| David Zhang | 1003260918     | davidcw.zhang@mail.utoronto.ca |
+| Tyler Sun   | 1007457645     | tyl.sun@mail.utoronto.ca       |
+| Rohan Datta |                |                                |
 
 ---
 
@@ -86,6 +89,19 @@ Instructors can view the course schedule and sync it to their personal Google Ca
 ### Student Guide
 
 ## Deployment Guide
+N/A
+
+## AI Assistance & Verification (Summary)
+
+## Individual Contributions
+
+| Name        | Contributions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| David Zhang | - Outlined, configured, and updated the Postgres schema to accomodate project scope <br/> - Created the login/register forms and incorporated Better Auth to handle user sessional information and account persistence <br/> - Unified UI theming across all pages `./lib/ui.ts` <br/> - Converted course and module creation and modification forms into modals using Nextjs parallel routes and intercepting routes <br/> - Added secured api routes for GCS (s3-compatible object storage) to dynamically generate expirable URLs for users and clients to upload and retrieve file information. Additionally updates Postgres with the appropriate file metadata through Prisma ORM |
+| Tyler Sun   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Rohan Datta |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+
+
 
 The report should clearly and concisely cover the following aspects:
 
