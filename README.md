@@ -66,7 +66,7 @@ When a user visits the website for the first time, they will be prompted with Lo
 
 <img src="images/landing_page.png" width="50%">
 <hr style="border: 0.5px solid gray">
-<img src="images/signup.png" width="50%">
+<img src="images/signup.png" width="80%">
 
 
 After logging in, users will be able to view open courses for enrollment by clicking on Add Course which will display options from the Course Marketplace. They can also teach a course by selecting Create Course next to Courses You Teach. Any courses you've created and are teaching can be seen here. Once you have enrolled in a course, it will appear in the Enrolled Course section showing the number of modules the course has and the courses's current completion status. Users can navigate back to this home page from any page by clicking on Demokrit.os on the top left, and log out from the option in the top right.
@@ -99,19 +99,19 @@ For courses not taught by the user, you can scroll through the course marketplac
 
 After enrolling, students can view course module details, download assignment files and take quiz attempts for the class. If they attempt to access a module before enrolling, they will be redirected back to the course page. To respond to assignments, students can attach a PDF file to submit their answers any time before the provided deadline. For quizzes, students can view quiz details including time limit, attempts they have remaining, and submission deadline before attempting. They can exit out of the quiz even after starting and resume it later, as long as it is submitted before the deadline.
 
-![alt text](images/course.png)
+<img src="images/course.png" width="80%">
 
 <hr style="border: 0.5px solid gray">
 
-![alt text](images/quiz_preview.png)
+<img src="images/quiz_preview.png" width="80%">
 
 After submitting an assignment or quiz, students will recieve a message confirming their submission. Quiz marks will be reported to the student immediately after submission, and they can also recieve a grade immediately on assignment submissions as well with the AI autograding feature.
 
-<img src="images/autograded.png" width="50%">
+<img src="images/autograded.png" width="80%">
 
 <hr style="border: 0.5px solid gray">
 
-<img src="images/quiz.png" width="50%">
+<img src="images/quiz.png" width="80%">
 
 Similarly to instructors, students can view upcoming deadlines through the course schedule and sync it to their own Google Calendar. They can also leave messages in the course discussion after joining the course to engage with other students and communicate with the instructor as necessary. Unlike the instructor role, students are only able to delete their own comments after posting.
 
@@ -252,12 +252,21 @@ N/A
 | Name        | Contributions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 |-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | David Zhang | - Outlined, configured, and updated the Postgres schema to accomodate project scope <br/> - Created the login/register forms and incorporated Better Auth to handle user sessional information and account persistence <br/> - Unified UI theming across all pages `./lib/ui.ts` <br/> - Converted course and module creation and modification forms into modals using Nextjs parallel routes and intercepting routes <br/> - Added secured api routes for GCS (s3-compatible object storage) to dynamically generate expirable URLs for users and clients to upload and retrieve file information. Additionally updates Postgres with the appropriate file metadata through Prisma ORM |
-| Tyler Sun   | - Created option to edit existing courses and their description for instructors <br/> - Implemented real time course discussion using SSEs for enrolled students and instructors broadcasting new comments and discussion updates to all connected users <br/> - Designed and developed application landing page with login and registration options <br/> - Documented motivation, objectives, technical stack features, and user guide sections |
+| Tyler Sun   | - Created and designed option to edit course information and description for instructor role <br/> - Implemented real time course discussion using SSEs for enrolled students and instructors broadcasting new comments and discussion updates live to all connected users <br/> - Designed and developed application landing page with login and registration options for unauthenticated users <br/> - Documented motivation, objectives, technical stack features, and user guide sections |
 | Rohan Datta |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
+## Lessons Learned
 
+From completing this project:
+- The importance of a clear proposal with a defined concept and general plan of execution before starting is crucial for effective development especially when deadlines are involved, such as here.
+- Transparent communication and regular collaboration among group members minimized issues in the conceptual stage in determining how to approach a wide task and to preventing overlap in tasks among members for efficiency.
+- Starting on the database schema early is important for a complex project, as it serves as a foundation for the rest of the application and is continuously expanded and iterated upon during development.
 
+## Concluding Remarks
 
+Technically, the website combines a variety of skills and frameworks, utilizing a Next.js full stack with a PostgreSQL database for persistent storage. The backend is ran with Next.js API routes and the frontend is styled with Tailwind CSS for the foundation of a comprehensive and functional web application. Multiple APIs are integrated including Google Cloud Storage for file management and Veracity Learning for quiz management for a wider range of features enhancing the user experience. Additional advanced features in real time discussion and user authentication with BetterAuth round out the project and make it more practical and deeper to use.
+
+Demokritos serves as an easy-to-use and effective platform for eager learners to find new information and pick up new skills, and for instructors to set up and manage courses to share knowledge with others. By offering a marketplace of a variety of open courses, users can customize their learning experience for subjects they are interested in, keeping users motivated to learn. With streamlined courses featuring intuitive modules and real time discussion, students will find it easy to follow classes, interact with the teacher(s) and learn effectively through online means as if they were in a real classroom. This application has potential to address current challenges present in remote learning for any age or skill level and improve education regardless of the medium. Overall, the website implements industry technologies in web development effectively for a complete application and positive user experience which contributes towards strengthening online learning for all users.
 
 
 The report should clearly and concisely cover the following aspects:
