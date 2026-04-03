@@ -79,11 +79,12 @@ export default function CourseCalendar({ courseId, modules }: { courseId: string
         const data = await res.json();
         
         if (!res.ok) {
-           if (res.status === 403 && data.error === "Google_Account_Not_Linked") {
-              // the user lacks google tokens. We force them through the auth flow to link.
+           if (res.status === 403 && (data.error === "Google_Account_Not_Linked" || data.error === "Google_Insufficient_Scopes")) {
+              // the user lacks google tokens or has insufficient scopes. We force them through the auth flow to link/re-link.
               await authClient.linkSocial({ 
                  provider: "google", 
-                 callbackURL: window.location.href 
+                 callbackURL: window.location.href,
+                 scopes: ["openid", "https://www.googleapis.com/auth/calendar.events"]
               });
               return;
            }

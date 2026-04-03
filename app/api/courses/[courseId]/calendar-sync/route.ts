@@ -80,6 +80,12 @@ export async function POST(request: NextRequest, props: { params: Promise<{ cour
      return NextResponse.json({ message: `Successfully synced ${syncedCount} active course deadlines to your Google Calendar.` });
   } catch (error: any) {
      console.error("Google Calendar Sync Error:", error);
+     
+     // Detect scope mismatch and report as 403 to trigger front-end re-link
+     if (error.code === 403 || error.status === 403 || error.message?.includes("insufficient authentication scopes")) {
+        return NextResponse.json({ error: "Google_Insufficient_Scopes" }, { status: 403 });
+     }
+     
      return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

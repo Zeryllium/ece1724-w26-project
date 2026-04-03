@@ -127,7 +127,7 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
             <div className="mt-6 p-4 rounded-lg bg-orange-50 border border-orange-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                <div>
                  <h3 className="font-semibold text-orange-900">Quiz Deadline</h3>
-                 <p className="text-sm font-bold text-orange-700 mt-1">{new Date((moduleData.quizConfig as any).dueDate).toLocaleString()}</p>
+                 <p className="text-sm font-bold text-orange-700 mt-1" suppressHydrationWarning>{new Date((moduleData.quizConfig as any).dueDate).toLocaleString()}</p>
                </div>
             </div>
          )}
@@ -151,7 +151,7 @@ export default async function ModulePage(props: { params: Promise<{ courseId: st
                   <div>
                     <h3 className="font-semibold text-slate-800">Assignment Materials</h3>
                     {moduleData.assignmentConfig && (moduleData.assignmentConfig as any).dueDate && (
-                      <p className="text-sm text-slate-600 mt-1">Due: {new Date((moduleData.assignmentConfig as any).dueDate).toLocaleString()}</p>
+                      <p className="text-sm text-slate-600 mt-1" suppressHydrationWarning>Due: {new Date((moduleData.assignmentConfig as any).dueDate).toLocaleString()}</p>
                     )}
                   </div>
                   {moduleData.moduleResources && moduleData.moduleResources.length > 0 && (
