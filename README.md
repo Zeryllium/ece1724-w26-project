@@ -23,12 +23,13 @@ Demokritos, meaning "chosen of the people", aims to serve as an online, user fri
 Instructors should be able to create their own courses, upload relevant course material or links, and create assessments through in class quizzes or assignments. Students should be able to find open courses and enroll in classes of interest. In enrolled classes, they should be able to view published course modules, upload files to respond to assignments and answer quizzes posted by the teacher. Both parties will be able to engage with each other quickly and seamlessly through real time discussion for easy question and answer sessions if needed.
 
 ## Technical Stack
-
 The application is developed with a full stack approach using Next.js.
+
+<img src="Architectural%20Diagram%20-%20No%20Border.png" alt="Architectural Diagram of the Demokrit.os tech stack">
 
 Frontend: React framework with Tailwind CSS for styling and shadcn/ui components  
 Backend: Next.js API routes  
-Database: PostgreSQL with Prisma ORM schema  
+Database: [PostgreSQL with Prisma ORM schema](#postgres-schema)  
 File Management: Google Cloud Storage  
 Authentication: Better Auth  
 External APIs:
@@ -43,7 +44,7 @@ Frontend and backend components are implemented with TypeScript. Playweight is u
 
 ## Features
 
-Users are able to register for an account and login to that account using any email. Once authenticated, users are able to explore the course marketplace showing open courses, enroll in open courses and create their own course for others. If a user creates a new course for the marketplace, they are assigned as an instructor for that course, and if a user enrolls in someone else's course, they are assigned a student role.
+Users are able to register for an account and login to that account using any email. Once authenticated, users are able to explore the course marketplace showing open courses, enroll in open courses and create their own course for others. If a user creates a new course for the marketplace, they are assigned as an instructor for that course, and if a user enrolls in someone else's course, they are assigned a student role. More specifically, roles are assigned on a per-user per-course basis; a user with student access in one course can still have instructor access in another.
 
 Instructors can:
 - Edit course description and delete course
@@ -268,6 +269,13 @@ Technically, the website combines a variety of skills and frameworks, utilizing 
 
 Demokritos serves as an easy-to-use and effective platform for eager learners to find new information and pick up new skills, and for instructors to set up and manage courses to share knowledge with others. By offering a marketplace of a variety of open courses, users can customize their learning experience for subjects they are interested in, keeping users motivated to learn. With streamlined courses featuring intuitive modules and real time discussion, students will find it easy to follow classes, interact with the teacher(s) and learn effectively through online means as if they were in a real classroom. This application has potential to address current challenges present in remote learning for any age or skill level and improve education regardless of the medium. Overall, the website implements industry technologies in web development effectively for a complete application and positive user experience which contributes towards strengthening online learning for all users.
 
+
+## Appendix
+
+### Postgres Schema
+<img src="prisma-schema.svg" alt="Postgres Database Schema">
+
+### Extras
 
 The report should clearly and concisely cover the following aspects:
 
