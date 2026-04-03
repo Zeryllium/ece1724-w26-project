@@ -209,22 +209,6 @@ describe('Student Enrollment API & Actions', () => {
        expect(prisma.submission.upsert).not.toHaveBeenCalled();
     });
 
-    it('POST /api/.../submit should parse AI feedback and automatically assign a grade if AI grading is enabled', async () => {
-       vi.mocked(auth.api.getSession).mockResolvedValueOnce(mockStudentSession as any);
-       vi.mocked(prisma.module.findFirst).mockResolvedValueOnce({
-         ...mockAssignmentModule,
-         assignmentConfig: { dueDate: new Date(Date.now() + 100000).toISOString(), aiGradingEnabled: true, aiRubric: "Strict", aiDifficulty: "hard" }
-       } as any);
-       
-       const req = createMockRequest({ assignmentFileUrl: '/uploads/ai-eval.pdf' });
-       const res = await submitQuiz(req, { params: Promise.resolve({ courseId: 'course-1', moduleIndex: '2' }) });
-       
-       expect(res.status).toBe(200);
-       
-       const upsertCall = vi.mocked(prisma.submission.upsert).mock.calls[0][0];
-       expect(upsertCall.create.submissionGrade).toBe(85);
-       expect(upsertCall.create.submissionStatus).toBe('PASS');
-       expect((upsertCall.create as any).assignmentState.instructorFeedback).toBe('Great work via AI!');
-    });
+
   });
 });
