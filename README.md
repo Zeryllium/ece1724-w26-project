@@ -64,12 +64,12 @@ Both students and instructors can browse the course schedule and sync it to thei
 
 When a user visits the website for the first time, they will be prompted with Login and Sign Up options. If the user does not have an account, they should register an account with their name, an email address, and a password - they can later use this email and password to login after creating an account.
 
-![alt text](images/landing_page.png)
+<img src="images/landing_page.png" width="50%">
 ![alt text](images/signup.png)
 
 After logging in, users will be able to view open courses for enrollment by clicking on Add Course which will display options from the Course Marketplace. They can also teach a course by selecting Create Course next to Courses You Teach. Any courses you've created and are teaching can be seen here. Once you have enrolled in a course, it will appear in the Enrolled Course section showing the number of modules the course has and the courses's current completion status. Users can navigate back to this home page from any page by clicking on Demokrit.os on the top left, and log out from the option in the top right.
 
-![alt text](images/course_page.png)
+![alt text](images/courses_page.png)
 
 ### Instructor Guide
 
@@ -82,11 +82,154 @@ Quizzes can be created as well, where instructors can customize the time limit, 
 
 Viewing quiz details will show overall quiz analytics from student attempts from the Veracity Learning API. Performance metrics shows total submissions, the average grade, and overall completion rate of the quiz. Behavioral analytics shows total quiz attempts or starts, total completions, the average duration taken on the quiz, and the average tab switches to another page over quiz attempts.
 
-![alt text](create_quiz.png)
+![alt text](images/create_quiz.png)
 
 Instructors can view the course schedule and sync it to their personal Google Calendar if desired. They can also participate in course discussion at the bottom of the course page to answer questions and encourage interactivity with their students. Comments from an instructor will have a red marker to help distinguish their answers from student posts. Instructors are able to moderate discussion by deleting any comment posted in the course discussion if desired.
 
+![alt text](images/discussion.png)
+
 ### Student Guide
+
+For courses not taught by the user, you can scroll through the course marketplace to find open courses for enrollment. To enroll in the course, click on the course window, and then find the Enroll Now button at the top of the course page. Once enrolled, the button should display the Enrolled message instead, and the student status will be displayed in the header in the top right. In addition, the course will now appear in their Enrolled Courses rather than in the marketplace in their home page.
+
+After enrolling, students can view course module details, download assignment files and take quiz attempts for the class. If they attempt to access a module before enrolling, they will be redirected back to the course page. To respond to assignments, students can attach a PDF file to submit their answers any time before the provided deadline. For quizzes, students can view quiz details including time limit, attempts they have remaining, and submission deadline before attempting. They can exit out of the quiz even after starting and resume it later, as long as it is submitted before the deadline.
+
+![alt text](images/course.png)
+![alt text](images/quiz_preview.png)
+
+After submitting an assignment or quiz, students will recieve a message confirming their submission. Quiz marks will be reported to the student immediately after submission, and they can also recieve a grade immediately on assignment submissions as well with the AI autograding feature.
+
+![alt text](images/autograded.png)
+![alt text](images/quiz.png)
+
+Similarly to instructors, students can view upcoming deadlines through the course schedule and sync it to their own Google Calendar. They can also leave messages in the course discussion after joining the course to engage with other students and communicate with the instructor as necessary. Unlike the instructor role, students are only able to delete their own comments after posting.
+
+![alt text](images/schedule.png)
+
+## Development Guide
+
+Can also be viewed as a separate document in DEVELOPERS.md.
+
+### 1. Initial Setup
+
+After pulling down the repository, you'll need to install dependencies and configure your environment:
+
+```bash
+# Install all node packages
+npm install
+
+# Make sure you have a .env file containing the following variables:
+# DATABASE_URL=""
+# NEXT_PUBLIC_API_BASE_URL=""
+# BETTER_AUTH_SECRET=
+# BETTER_AUTH_URL=
+
+# Veracity LRS Configuration for Quiz Analytics
+# LRS_ENDPOINT=""
+# LRS_KEY=""
+# LRS_SECRET=""
+
+# Google GenAI Configuration for Assignment Autograding
+# GEMINI_API_KEY=""
+
+# Google Calendar OAuth Configuration
+# GOOGLE_CLIENT_ID=""
+# GOOGLE_CLIENT_SECRET=""
+```
+
+The Better Auth secret can be generated through https://better-auth.com/docs/installation or using the following:
+```bash
+openssl rand -base64 32
+```
+
+For quiz analytics, create a Veracity Learning account here: https://lrs.io/ui/users/home/0/
+Create a new LRS with any name, then within that LRS, naivgate to Management -> Access Keys and create a new access key, which will give the configuration variables above.
+
+For Google Calendar Sync features, you must enable the Calendar API via Google Cloud Console, configure your OAuth Consent Screen with the `https://www.googleapis.com/auth/calendar.events` scope, and provision an OAuth Client ID explicitly bound to `http://localhost:3000/api/auth/callback/google` to test synchronization functionality locally.
+
+### 2. Database Initialization
+
+We use Prisma as our ORM. If this is a fresh pull, you must generate the client and push the schema to your database.
+
+```bash
+# Generate the Prisma Client
+npx prisma generate
+
+# Push the schema structure to your database
+npx prisma db push
+```
+
+### 3. Setting up Google Cloud Storage (GCS)
+1. Create a Google Cloud account if you have not done so already.
+2. Create a GCS bucket in your desired region of choice with default settings. <u><b>TURN OFF PUBLIC ACCESS</b></u>
+3. Download gcloud cli (https://cloud.google.com/cli)
+4. Set up your CORS configuration to be able to access the S3 bucket using the provided `cors-config.json` file:
+    ```shell
+    gcloud storage buckets update gs://BUCKET_NAME --cors-file=CORS_CONFIG_FILE
+    ```
+5. Check to see if your CORS configuration has changed with:
+    ```shell
+    gcloud storage buckets describe gs://BUCKET_NAME --format="json"
+    ```
+6. Go to the `Settings → Interoperability` in the GCS console and create an access key for your account
+7. Add the corresponding secrets to your `.env` file
+    ```
+    # S3 Access Key Credentials (Check the Interoperability tab in GCS)
+    S3_ACCESS_KEY_ID=<google_access_key>
+    S3_ACCESS_KEY_SECRET=<google_access_secret>
+    
+    # Bucket details
+    S3_BUCKET_NAME=<gcs_bucket_name>
+    
+    # The GCS S3-compatible endpoint and other configs
+    S3_ENDPOINT=https://storage.googleapis.com
+    S3_REGION=<google_service_region>
+    S3_FORCE_PATH_STYLE=true
+    ``` 
+
+### 4. Running the API Unit Tests (Vitest)
+
+We use Vitest to mock HTTP requests and test the specific isolated logic of the API endpoints directly (`/api/courses`, etc.). The test suites are now modularized into:
+- `tests/general.api.test.ts`
+- `tests/instructor.api.test.ts`
+- `tests/student.api.test.ts`
+
+```bash
+# Run the entire Vitest test suite once
+npx vitest run
+
+# Run a specific Vitest suite
+npx vitest run tests/student.api.test.ts
+
+# Run Vitest in watch mode (updates automatically as you write code)
+npx vitest
+```
+
+### 5. Running the Browser UI Tests (Playwright)
+
+We use Playwright to simulate a real user opening a Chromium browser, interacting with the Unified Dashboard, and creating or enrolling in courses. The test suites are divided into:
+- `tests/general.spec.ts`
+- `tests/instructor.spec.ts`
+- `tests/student.spec.ts`
+
+Note: Playwright requires the Next.js development server to be actively running in the background because it hits `http://localhost:3000`.
+
+```bash
+# In Terminal 1: Start the Next.js app
+npm run dev
+
+# In Terminal 2: Run the entire Playwright test suite
+npx playwright test
+
+# Or run a specific Playwright test file
+npx playwright test tests/instructor.spec.ts
+
+# View the visual HTML report of the test results
+npx playwright show-report
+```
+
+### Troubleshooting
+If Playwright is failing due to timeout issues, ensure your development server is completely loaded.
 
 ## Deployment Guide
 N/A
@@ -102,6 +245,9 @@ N/A
 | Rohan Datta |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 
+
+
+## AI Assistance & Verification
 
 The report should clearly and concisely cover the following aspects:
 
