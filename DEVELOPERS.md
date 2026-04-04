@@ -1,124 +1,227 @@
-# Developer Guide: Instructor Subsystem
+# Developer Guide: Demokritos
 
-Welcome to the Demokritos project! This guide will help you set up the environment from scratch, provision the database, and run all our automated tests for the Instructor subsystem.
+Welcome to the Demokritos project! This guide walks you through every step needed to get the application running locally from a fresh clone, including all external service setup.
 
-## 1. Initial Setup
+---
 
-After pulling down the repository, you'll need to install dependencies and configure your environment:
+## 1. Clone and Install Dependencies
 
 ```bash
-# Install all node packages
+git clone https://github.com/Zeryllium/ece1724-w26-project.git
+cd ece1724-w26-project
 npm install
-
-# Make sure you have a .env file containing the following variables:
-# DATABASE_URL=""
-# NEXT_PUBLIC_API_BASE_URL=""
-# BETTER_AUTH_SECRET=
-# BETTER_AUTH_URL=
-
-# Veracity LRS Configuration for Quiz Analytics
-# LRS_ENDPOINT=""
-# LRS_KEY=""
-# LRS_SECRET=""
-
-# Google GenAI Configuration for Assignment Autograding
-# GEMINI_API_KEY=""
-
-# Google Calendar OAuth Configuration
-# GOOGLE_CLIENT_ID=""
-# GOOGLE_CLIENT_SECRET=""
 ```
 
-The Better Auth secret can be generated through https://better-auth.com/docs/installation or using the following:
+---
+
+## 2. Environment Variables
+
+Copy the example env file and fill in the values described in the sections below:
+
+```bash
+cp .env.example .env
+```
+
+Your `.env` file needs the following variables:
+
+```env
+# App
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_SECRET=
+
+# Database
+DATABASE_URL=
+
+# Google OAuth (Calendar + Auth)
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# Google Cloud Storage
+S3_ACCESS_KEY_ID=
+S3_ACCESS_KEY_SECRET=
+S3_BUCKET_NAME=
+S3_ENDPOINT=https://storage.googleapis.com
+S3_REGION=
+S3_FORCE_PATH_STYLE=true
+
+# Google Gemini AI (Autograding)
+GEMINI_API_KEY=
+
+# Veracity LRS (Quiz Analytics)
+LRS_ENDPOINT=
+LRS_KEY=
+LRS_SECRET=
+```
+
+### Generating `BETTER_AUTH_SECRET`
+
+Run either of the following to generate a secure random secret:
+
 ```bash
 openssl rand -base64 32
 ```
 
-For quiz analytics, create a Veracity Learning account here: https://lrs.io/ui/users/home/0/
-Create a new LRS with any name, then within that LRS, naivgate to Management -> Access Keys and create a new access key, which will give the configuration variables above.
+or visit https://better-auth.com/docs/installation for alternatives. Paste the result as the value of `BETTER_AUTH_SECRET`.
 
-For Google Calendar Sync features, you must enable the Calendar API via Google Cloud Console, configure your OAuth Consent Screen with the `https://www.googleapis.com/auth/calendar.events` scope, and provision an OAuth Client ID explicitly bound to `http://localhost:3000/api/auth/callback/google` to test synchronization functionality locally.
+---
 
-## 2. Database Initialization
+## 3. Database Setup (PostgreSQL + Prisma)
 
-We use Prisma as our ORM. If this is a fresh pull, you must generate the client and push the schema to your database.
+You need a running PostgreSQL instance. Set `DATABASE_URL` in your `.env` to your connection string, for example:
+
+```
+DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/demokritos"
+```
+
+Then run the following to generate the Prisma client and push the schema:
 
 ```bash
-# Generate the Prisma Client
 npx prisma generate
-
-# Push the schema structure to your database
 npx prisma db push
 ```
 
-## 3. Setting up Google Cloud Storage (GCS)
-1. Create a Google Cloud account if you have not done so already.
-2. Create a GCS bucket in your desired region of choice with default settings. <u><b>TURN OFF PUBLIC ACCESS</b></u>
-3. Download gcloud cli (https://cloud.google.com/cli)
-4. Set up your CORS configuration to be able to access the S3 bucket using the provided `cors-config.json` file:
-    ```shell
-    gcloud storage buckets update gs://BUCKET_NAME --cors-file=CORS_CONFIG_FILE
-    ```
-5. Check to see if your CORS configuration has changed with:
-    ```shell
-    gcloud storage buckets describe gs://BUCKET_NAME --format="json"
-    ```
-6. Go to the `Settings → Interoperability` in the GCS console and create an access key for your account
-7. Add the corresponding secrets to your `.env` file
-    ```
-    # S3 Access Key Credentials (Check the Interoperability tab in GCS)
-    S3_ACCESS_KEY_ID=<google_access_key>
-    S3_ACCESS_KEY_SECRET=<google_access_secret>
-    
-    # Bucket details
-    S3_BUCKET_NAME=<gcs_bucket_name>
-    
-    # The GCS S3-compatible endpoint and other configs
-    S3_ENDPOINT=https://storage.googleapis.com
-    S3_REGION=<google_service_region>
-    S3_FORCE_PATH_STYLE=true
-    ``` 
+---
 
-## 4. Running the API Unit Tests (Vitest)
+## 4. Google OAuth Setup (for Auth and Calendar Sync)
 
-We use Vitest to mock HTTP requests and test the specific isolated logic of the API endpoints directly (`/api/courses`, etc.). The test suites are now modularized into:
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) and create a new project (or use an existing one).
+2. In the left sidebar, go to **APIs & Services → Library**.
+   - Search for and enable **Google Calendar API**.
+3. Go to **APIs & Services → OAuth consent screen**.
+   - Select **External** as the user type and click **Create**.
+   - Fill in the app name (e.g. "Demokritos"), support email, and developer contact.
+   - On the **Scopes** page, click **Add or Remove Scopes** and add:
+     - `https://www.googleapis.com/auth/calendar.events`
+     - `https://www.googleapis.com/auth/userinfo.email`
+     - `https://www.googleapis.com/auth/userinfo.profile`
+   - Add yourself (and any testers) as test users on the **Test Users** page.
+4. Go to **APIs & Services → Credentials** and click **Create Credentials → OAuth Client ID**.
+   - Application type: **Web application**.
+   - Under **Authorized redirect URIs**, add: `http://localhost:3000/api/auth/callback/google`
+   - Click **Create**. Copy the **Client ID** and **Client Secret** into your `.env` as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+
+---
+
+## 5. Google Cloud Storage (GCS) Setup
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) and navigate to **Cloud Storage → Buckets**.
+2. Click **Create** and choose a name and region. Leave all other settings as default. **Turn off public access** (this is important).
+3. Install the [Google Cloud CLI](https://cloud.google.com/sdk/docs/install) if you have not already.
+4. Apply the CORS configuration using the provided `cors-config.json` file in the repo:
+   ```bash
+   gcloud storage buckets update gs://YOUR_BUCKET_NAME --cors-file=cors-config.json
+   ```
+5. Verify the CORS config was applied:
+   ```bash
+   gcloud storage buckets describe gs://YOUR_BUCKET_NAME --format="json"
+   ```
+6. In the GCS Console, go to **Settings → Interoperability** and click **Create a key for a service account** (or your user account). This gives you an **Access Key** and **Secret**.
+7. Fill in your `.env` with the values from step 6 and your bucket details:
+   ```env
+   S3_ACCESS_KEY_ID=<your_access_key>
+   S3_ACCESS_KEY_SECRET=<your_secret>
+   S3_BUCKET_NAME=<your_bucket_name>
+   S3_ENDPOINT=https://storage.googleapis.com
+   S3_REGION=<region_you_chose_e.g._us-central1>
+   S3_FORCE_PATH_STYLE=true
+   ```
+
+---
+
+## 6. Google Gemini API Key (AI Autograding)
+
+1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey).
+2. Sign in with your Google account.
+3. Click **Create API Key** and copy the generated key.
+4. Add it to your `.env`:
+   ```env
+   GEMINI_API_KEY=<your_gemini_api_key>
+   ```
+
+---
+
+## 7. Veracity LRS Setup (Quiz Analytics)
+
+1. Create a free account at [lrs.io](https://lrs.io/ui/users/home/0/).
+2. Once logged in, click **Create a new LRS** and give it any name.
+3. Inside the LRS, navigate to **Management → Access Keys** and click **Create Access Key**.
+4. Copy the **Endpoint**, **Key**, and **Secret** into your `.env`:
+   ```env
+   LRS_ENDPOINT=https://cloud.scorm.com/lrs/<your-lrs-id>/
+   LRS_KEY=<your_access_key>
+   LRS_SECRET=<your_access_secret>
+   ```
+
+---
+
+## 8. Running the Development Server
+
+Once all environment variables are set and the database is initialized, start the app:
+
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:3000`.
+
+---
+
+## 9. Running the API Unit Tests (Vitest)
+
+Vitest mocks HTTP requests and tests the API endpoint logic in isolation. No running server is needed.
+
+Test files:
 - `tests/general.api.test.ts`
 - `tests/instructor.api.test.ts`
 - `tests/student.api.test.ts`
 
 ```bash
-# Run the entire Vitest test suite once
+# Run the full test suite once
 npx vitest run
 
-# Run a specific Vitest suite
+# Run a specific test file
 npx vitest run tests/student.api.test.ts
 
-# Run Vitest in watch mode (updates automatically as you write code)
+# Run in watch mode (re-runs on file changes)
 npx vitest
 ```
 
-## 5. Running the Browser UI Tests (Playwright)
+---
 
-We use Playwright to simulate a real user opening a Chromium browser, interacting with the Unified Dashboard, and creating or enrolling in courses. The test suites are divided into:
+## 10. Running the Browser UI Tests (Playwright)
+
+Playwright drives a real Chromium browser against the running app. The development server must be running before you start these tests.
+
+Test files:
 - `tests/general.spec.ts`
 - `tests/instructor.spec.ts`
 - `tests/student.spec.ts`
 
-Note: Playwright requires the Next.js development server to be actively running in the background because it hits `http://localhost:3000`.
-
 ```bash
-# In Terminal 1: Start the Next.js app
+# Terminal 1: Start the dev server
 npm run dev
 
-# In Terminal 2: Run the entire Playwright test suite
+# Terminal 2: Run the full Playwright suite
 npx playwright test
 
-# Or run a specific Playwright test file
+# Run a specific file
 npx playwright test tests/instructor.spec.ts
 
-# View the visual HTML report of the test results
+# View the HTML test report
 npx playwright show-report
 ```
 
+---
+
 ## Troubleshooting
-If Playwright is failing due to timeout issues, ensure your development server is completely loaded.
+
+**Playwright tests timing out**: Make sure `npm run dev` has fully started and the app is accessible at `http://localhost:3000` before running tests.
+
+**Prisma errors on startup**: Run `npx prisma generate` again after any schema changes and make sure `DATABASE_URL` is correctly set in `.env`.
+
+**Google Calendar sync returns 403**: The OAuth consent screen scope must include `https://www.googleapis.com/auth/calendar.events`. Re-authorize through the app (it will prompt you automatically).
+
+**GCS uploads failing**: Double-check the CORS config was applied with `gcloud storage buckets describe`. Also ensure `S3_FORCE_PATH_STYLE=true` is set.
+
+**Gemini autograding not working**: Confirm `GEMINI_API_KEY` is valid and the key has not hit its free-tier quota limit. Check the Google AI Studio dashboard.
