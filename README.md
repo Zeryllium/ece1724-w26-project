@@ -165,7 +165,7 @@ Similarly to instructors, students can view upcoming deadlines through the cours
 
 ## Development Guide
 
-Can also be viewed as a separate document in [DEVELOPERS.md](DEVELOPERS.md), which contains full step-by-step instructions for all external services. Credentials for the live instance have been sent directly to the TA — no external service provisioning is required to evaluate the running application.
+Can also be viewed as a separate document in [DEVELOPERS.md](DEVELOPERS.md), which contains full step-by-step instructions for all external services. Credentials for the live instance have been sent directly to the TA, with this the entire application should work, but if you want to see artifacts on the external platforms you will need to set-up the services yourself (which are explained below).
 
 ### 1. Install Dependencies & Configure Environment
 
