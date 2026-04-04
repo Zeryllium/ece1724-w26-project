@@ -218,7 +218,8 @@ AI tools (primarily GitHub Copilot and ChatGPT) were used at several points duri
                                                                                                                                                                                                                                                
 ## Lessons Learned
 
-From completing this project:
+By working on a deep and multi-layered web application, team members were able to learn various technical and interpersonal lessons on team projects which can be carried forward and applied in future individual and group work. These include the following:
+
 - The importance of a clear proposal with a defined concept and general plan of execution before starting is crucial for effective development especially when deadlines are involved, such as here.
 - Transparent communication and regular collaboration among group members minimized issues in the conceptual stage in determining how to approach a wide task as a team and to preventing overlap in tasks among members for efficiency.
 - Starting on the database schema early is important for a complex project, as it serves as a foundation for the rest of the application and is continuously expanded and iterated upon during development.
